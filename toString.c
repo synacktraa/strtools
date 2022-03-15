@@ -20,6 +20,35 @@ int octToDec(int n){
 
 }
 
+int hexToDec(char* h){ 
+
+    int dec = 0, bitshift = 0, cnt = 0;
+    char* ptr = h; 
+    
+    auto int decimal(int,int,int); 
+    int decimal(int bit, int count, int minValue){ 
+
+        int num = 0, hexPow = 0;
+        hexPow = power(16, bit); 
+        num += (*(h+count)-minValue)*hexPow;
+        return num; 
+    } 
+    while(*ptr != '\0'){ 
+        cnt++; 
+        ptr++; 
+    }
+    while(cnt >= 0){ 
+        --cnt;
+        if((*(h+cnt) >=97 && *(h+cnt) <=102)) 
+            dec += decimal(bitshift, cnt, 87); 
+        else if((*(h+cnt) >=65 && *(h+cnt) <=70)) 
+            dec += decimal(bitshift, cnt, 55); 
+        else if((*(h+cnt) >=48 && *(h+cnt) <=57)) 
+            dec += decimal(bitshift, cnt, 48); 
+        bitshift++; 
+    }
+    return dec;
+}
 
 int* octal_to_string(char *octaldump){
 
@@ -53,6 +82,6 @@ int* decimal_to_string(char *decimal_dump){
 
 int main(int argc, char**argv){
 
-    decimal_to_string(argv[1]);
+    hexadecimal_to_string(argv[1]);
     return 0;
 }

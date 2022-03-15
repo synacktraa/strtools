@@ -36,8 +36,23 @@ int* octal_to_string(char *octaldump){
 }
 
 
+int* decimal_to_string(char *decimal_dump){
+
+    char *token;
+    
+    token = strtok(decimal_dump, " ");
+    
+    while( token != NULL ) {
+        printf("%c", AtoI(token));
+        token = strtok(NULL, " ");
+    }
+
+    return 0;
+}
+
+
 int main(int argc, char**argv){
 
-    octal_to_string(argv[1]);
+    decimal_to_string(argv[1]);
     return 0;
 }

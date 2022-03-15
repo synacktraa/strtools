@@ -50,6 +50,22 @@ int hexToDec(char* h){
     return dec;
 }
 
+
+int binToDec(char* binary){ 
+    
+    int i = 0, j, k;
+    int dec = 0;
+    while(*(binary+i) != '\0')
+        ++i;
+
+    for(j = i-1, k = 0; j >= 0; --j, ++k)
+        dec += (*(binary+k)-48)*power(2,j); 
+
+    return dec;
+
+}
+
+
 int* octal_to_string(char *octaldump){
 
     char *token;
@@ -79,9 +95,23 @@ int* decimal_to_string(char *decimal_dump){
     return 0;
 }
 
+int* binary_to_string(char *bindump){
+
+    char *token;
+    
+    token = strtok(bindump, " ");
+    
+    while( token != NULL ) {
+        printf("%c", binToDec(token));
+        token = strtok(NULL, " ");
+    }
+
+    return 0;
+}
+
 
 int main(int argc, char**argv){
 
-    hexadecimal_to_string(argv[1]);
+    binary_to_string(argv[1]);
     return 0;
 }

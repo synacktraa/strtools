@@ -25,6 +25,17 @@ int Strlen(const char* string){
 }
 
 
+void Strcpy(char* destination, char* source){
+   
+   int i;
+   for(i = 0; *(source+i) != '\0'; i++)
+      *(destination+i) = *(source+i);
+
+   *(destination+i) = '\0';
+   
+}
+
+
 int delete(char*data, int index, int length){
 
     int i;

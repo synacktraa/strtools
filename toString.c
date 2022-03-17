@@ -140,13 +140,42 @@ int to_string_infile(char* file_in, int print_stat, int outfile_stat, char* file
     fclose(in);
     fclose(tmp);
 
+    ch = 0;
     FILE*fp = fopen("temp", "r");
     FILE*out = fopen(file_out, "w");
 
     char buff[BUFFER];
     while (fgets(buff, BUFFER, fp)){
         buff[strcspn(buff, "\n")] = 0;
-        printf("%c", AtoI(buff));
+        if(!Strcmp(type, "-od")){
+            ch = octToDec(AtoI(buff));
+            if(print_stat == 1 && outfile_stat == 0){
+                printf("%c", ch);
+            } else {
+                fputc(ch, out);
+            }
+        } else if(!Strcmp(type, "-hd")){
+            ch = hexToDec(buff);
+            if(print_stat == 1 && outfile_stat == 0){
+                printf("%c", ch);
+            } else {
+                fputc(ch, out);
+            }
+        } else if(!Strcmp(type, "-bd")){
+            ch = binToDec(buff);
+            if(print_stat == 1 && outfile_stat == 0){
+                printf("%c", ch);
+            } else {
+                fputc(ch, out);
+            }
+        } else if(!Strcmp(type, "-id")){
+            ch = AtoI(buff);
+            if(print_stat == 1 && outfile_stat == 0){
+                printf("%c", ch);
+            } else {
+                fputc(ch, out);
+            }
+        } 
     }
 
     fclose(fp);
@@ -232,7 +261,6 @@ int main(int argc, char**argv){
                     !Strcmp(argv[i+1], opt_f) ||
                     !Strcmp(argv[i+1], opt_i) ||
                     !Strcmp(argv[i+1], opt_p)){
-                        fprintf(stdout, "Default: writing output in [toString_out]\n\n\n");
                         Strcpy(out_file, "toString_out");
                         break;
                 } else {

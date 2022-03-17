@@ -4,12 +4,29 @@
 
 #define BUFFER 20
 
+char *winbase(char const *);
+char *unixbase(char const *);
 int octal_to_string_arg(char *, int, char*);
 int decimal_to_string_arg(char *, int, char*);
 int binary_to_string_arg(char *, int, char*);
 int hexadecimal_to_string_arg(char *, int, char*);
 int to_string_infile(char*, int, char*, char*);
 
+char *winbase(char const *path) {
+        char *s = strrchr(path, '\\');
+        if(!s) 
+            return strdup(path);
+         else 
+            return strdup(s + 1);
+}
+
+char *unixbase(char const *path) {
+        char *s = strrchr(path, '/');
+        if(!s) 
+            return strdup(path);
+         else 
+            return strdup(s + 1);
+}
 
 int octal_to_string_arg(char *octdump, int outfile_stat, char* file_out){
 
@@ -18,7 +35,7 @@ int octal_to_string_arg(char *octdump, int outfile_stat, char* file_out){
     FILE*out = fopen(file_out, "w");
 
     if(out == NULL){
-        fprintf(stderr, "Error: file not found.");
+        fprintf(stderr, "FileError: file can't be opened.");
         return -1;
     }            
     
@@ -49,7 +66,7 @@ int decimal_to_string_arg(char *intdump, int outfile_stat, char* file_out){
     FILE*out = fopen(file_out, "w");
 
     if(out == NULL){
-        fprintf(stderr, "Error: file not found.");
+        fprintf(stderr, "FileError: file can't be opened.");
         return -1;
     }        
     
@@ -80,7 +97,7 @@ int binary_to_string_arg(char *bindump, int outfile_stat, char* file_out){
     FILE*out = fopen(file_out, "w");
 
     if(out == NULL){
-        fprintf(stderr, "Error: file not found.");
+        fprintf(stderr, "FileError: file can't be opened.");
         return -1;
     }        
     
@@ -110,7 +127,7 @@ int hexadecimal_to_string_arg(char *hexdump, int outfile_stat, char* file_out){
     FILE*out = fopen(file_out, "w");
 
     if(out == NULL){
-        fprintf(stderr, "Error: file not found.");
+        fprintf(stderr, "FileError: file can't be opened.");
         return -1;
     }    
 
@@ -140,7 +157,7 @@ int to_string_infile(char* file_in, int outfile_stat, char* file_out, char* type
     FILE*tmp = fopen("temp", "w");
 
     if(in == NULL || tmp == NULL){
-        fprintf(stderr, "Error: file not found.");
+        fprintf(stderr, "FileError: file can't be opened.");
         return -1;
     }
 
@@ -221,11 +238,11 @@ int main(int argc, char**argv){
 
     
     void usage(char* param){
-        fprintf(stdout, "Usage: %s <type> <input> data|file\n", param);
+        fprintf(stderr, "\nUsage: %s <type> <input> data|file -o outfile.txt\n", param);
     }
 
     void help(){
-        fprintf(stdout, "\n|CLI options|:-\
+        fprintf(stderr, "\n|CLI options|:-\
         \n   type:\n      -od = The data passed should be octal.\
         \n      -bd = The data passed should be binary.\
         \n      -id = The data passed should be decimal.\
@@ -236,20 +253,26 @@ int main(int argc, char**argv){
         \n\t   (if filename is null, it's set to toString_out as filename.)\
         \n\t   [if '-o' is not used, result is printed to STDOUT.]\n\n");
     }
+    char* srcfile = unixbase(argv[0]);
+    
+    if(!strcmp(argv[0], srcfile)){
+        memset(srcfile, '\0', strlen(srcfile));
+        strcpy(srcfile, winbase(argv[0]));
+    }
 
     if(argc == 1){
-        usage(argv[0]);
+        usage(srcfile);
         fprintf(stderr, "\nFor more, check help section:\
-        \n    %s -h\n\n", argv[0]);
+        \n    %s -h\n\n", srcfile);
         return -1;
 
-    }else if(argc == 2 && !strcmp(argv[1], "-h")){
-        usage(argv[0]);
+    } else if(argc == 2 && !strcmp(argv[1], "-h")){
+        usage(srcfile);
         help();
         return 1;
 
     } else if(argc > 6){
-        fprintf(stderr, "ArgumentError: invalid number of arguments.");
+        fprintf(stderr, "\nArgumentError: invalid number of arguments.");
         return -1;
 
     } else if(argc <= 6){
@@ -265,8 +288,10 @@ int main(int argc, char**argv){
                     !strcmp(argv[i+1], opt_id) || 
                     !strcmp(argv[i+1], opt_o) ||
                     !strcmp(argv[i+1], opt_i)){
-                        fprintf(stderr, "InputError: file not detected.\n");
-                        help();
+                        fprintf(stderr, "\nInputError: file not detected.\n");
+                        usage(srcfile);
+                        fprintf(stderr, "\nFor more, check help section:\
+                        \n    %s -h\n\n", srcfile);
                         return -1;
                 }
                 strcpy(in_file, argv[i+1]);
@@ -287,14 +312,17 @@ int main(int argc, char**argv){
                     !strcmp(argv[i+1], opt_id) || 
                     !strcmp(argv[i+1], opt_o) ||
                     !strcmp(argv[i+1], opt_f)){
-                        fprintf(stderr, "InputError: no input detected.\n");
+                        fprintf(stderr, "\nInputError: no input detected.\n");
+                        usage(srcfile);
+                        fprintf(stderr, "\nFor more, check help section:\
+                        \n    %s -h\n\n", srcfile);
                         return -1;
                 }
                 arg_in = argv[i+1];
                 opt_i_stat = 1;
 
                 if(opt_f_stat && opt_i_stat){
-                    usage(argv[0]);
+                    usage(srcfile);
                     help();
                     return -1;
                 }
@@ -354,11 +382,11 @@ int main(int argc, char**argv){
         }
 
         if(type_stat > 1){
-            fprintf(stderr, "TypeError: input can't be more than one type.\n");
+            fprintf(stderr, "\nTypeError: data can't be of more than one type.\n");
             help();
             return -1;
         } else if(type_stat == 0){
-            fprintf(stderr, "TypeError: input type not specified!\n");
+            fprintf(stderr, "\nTypeError: data type not specified!\n");
             help();
             return -1;
         }
@@ -369,7 +397,7 @@ int main(int argc, char**argv){
             strcpy(out_file, "nil");
 
         if(opt_f_stat == 0 && opt_i_stat == 0){
-            fprintf(stderr, "InputError: no data or file detected.\n");
+            fprintf(stderr, "\nInputError: no data or file detected.\n");
             help();
             return -1;
         } else if(opt_f_stat == 1 && opt_i_stat == 0){

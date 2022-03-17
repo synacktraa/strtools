@@ -4,6 +4,7 @@
 //Function declarations
 int power(int base, int p);
 int Strlen(const char* string);
+void Strcpy(char* dest, char* src);
 int Strncut(char* dest, char* src, int ncut);
 int Strdcut(char*dest, char* src, char delimeter);
 int Strcmp(const char* string1, const char* string2);

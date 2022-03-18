@@ -4,15 +4,15 @@
 
 #define BUFFER 20
 
-char *winbase(char const *);
-char *unixbase(char const *);
+char *win_bname_parser(char const *);
+char *unix_bname_parser(char const *);
 int octal_to_string_arg(char *, int, char*);
 int decimal_to_string_arg(char *, int, char*);
 int binary_to_string_arg(char *, int, char*);
 int hexadecimal_to_string_arg(char *, int, char*);
 int to_string_infile(char*, int, char*, char*);
 
-char *winbase(char const *path) {
+char *win_bname_parser(char const *path) {
         char *s = strrchr(path, '\\');
         if(!s) 
             return strdup(path);
@@ -20,7 +20,7 @@ char *winbase(char const *path) {
             return strdup(s + 1);
 }
 
-char *unixbase(char const *path) {
+char *unix_bname_parser(char const *path) {
         char *s = strrchr(path, '/');
         if(!s) 
             return strdup(path);
@@ -253,11 +253,11 @@ int main(int argc, char**argv){
         \n\t   (if filename is null, it's set to toString_out as filename.)\
         \n\t   [if '-o' is not used, result is printed to STDOUT.]\n\n");
     }
-    char* srcfile = unixbase(argv[0]);
+    char* srcfile = unix_bname_parser(argv[0]);
     
     if(!strcmp(argv[0], srcfile)){
         memset(srcfile, '\0', strlen(srcfile));
-        strcpy(srcfile, winbase(argv[0]));
+        strcpy(srcfile, win_bname_parser(argv[0]));
     }
 
     if(argc == 1){

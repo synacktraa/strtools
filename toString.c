@@ -4,28 +4,40 @@
 
 #define BUFFER 20
 
-char *win_bname_parser(char const *);
-char *unix_bname_parser(char const *);
+
+char *basename(char const *path);
 int octal_to_string_arg(char *, int, char*);
 int decimal_to_string_arg(char *, int, char*);
 int binary_to_string_arg(char *, int, char*);
 int hexadecimal_to_string_arg(char *, int, char*);
 int to_string_infile(char*, int, char*, char*);
 
-char *win_bname_parser(char const *path) {
+
+char *basename(char const *path){
+
+    auto char *win_basename_parser(char const *);
+    auto char *unix_basename_parser(char const *path);
+    
+    char *win_basename_parser(char const *path) {
         char *s = strrchr(path, '\\');
         if(!s) 
             return strdup(path);
-         else 
+        else 
             return strdup(s + 1);
-}
+    }
 
-char *unix_bname_parser(char const *path) {
+    char *unix_basename_parser(char const *path) {
         char *s = strrchr(path, '/');
         if(!s) 
             return strdup(path);
-         else 
+        else 
             return strdup(s + 1);
+    }
+
+    if(strcmp(path, unix_basename_parser(path)))
+        return strdup(unix_basename_parser(path));
+    else
+        return strdup(win_basename_parser(path));
 }
 
 int octal_to_string_arg(char *octdump, int outfile_stat, char* file_out){
@@ -253,21 +265,15 @@ int main(int argc, char**argv){
         \n\t   (if filename is null, it's set to toString_out as filename.)\
         \n\t   [if '-o' is not used, result is printed to STDOUT.]\n\n");
     }
-    char* binfile = unix_bname_parser(argv[0]);
-    
-    if(!strcmp(argv[0], binfile)){
-        memset(binfile, '\0', strlen(binfile));
-        strcpy(binfile, win_bname_parser(argv[0]));
-    }
 
     if(argc == 1){
-        usage(binfile);
+        usage(basename(argv[0]));
         fprintf(stderr, "\nFor more, check help section:\
-        \n    %s -h\n\n", binfile);
+        \n    %s -h\n\n", basename(argv[0]));
         return -1;
 
     } else if(argc == 2 && !strcmp(argv[1], "-h")){
-        usage(binfile);
+        usage(basename(argv[0]));
         help();
         return 1;
 
@@ -289,9 +295,9 @@ int main(int argc, char**argv){
                     !strcmp(argv[i+1], opt_o) ||
                     !strcmp(argv[i+1], opt_i)){
                         fprintf(stderr, "\nInputError: file not detected.\n");
-                        usage(binfile);
+                        usage(basename(argv[0]));
                         fprintf(stderr, "\nFor more, check help section:\
-                        \n    %s -h\n\n", binfile);
+                        \n    %s -h\n\n", basename(argv[0]));
                         return -1;
                 }
                 strcpy(in_file, argv[i+1]);
@@ -313,16 +319,16 @@ int main(int argc, char**argv){
                     !strcmp(argv[i+1], opt_o) ||
                     !strcmp(argv[i+1], opt_f)){
                         fprintf(stderr, "\nInputError: no input detected.\n");
-                        usage(binfile);
+                        usage(basename(argv[0]));
                         fprintf(stderr, "\nFor more, check help section:\
-                        \n    %s -h\n\n", binfile);
+                        \n    %s -h\n\n", basename(argv[0]));
                         return -1;
                 }
                 arg_in = argv[i+1];
                 opt_i_stat = 1;
 
                 if(opt_f_stat && opt_i_stat){
-                    usage(binfile);
+                    usage(basename(argv[0]));
                     help();
                     return -1;
                 }

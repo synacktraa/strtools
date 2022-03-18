@@ -253,21 +253,21 @@ int main(int argc, char**argv){
         \n\t   (if filename is null, it's set to toString_out as filename.)\
         \n\t   [if '-o' is not used, result is printed to STDOUT.]\n\n");
     }
-    char* srcfile = unix_bname_parser(argv[0]);
+    char* binfile = unix_bname_parser(argv[0]);
     
-    if(!strcmp(argv[0], srcfile)){
-        memset(srcfile, '\0', strlen(srcfile));
-        strcpy(srcfile, win_bname_parser(argv[0]));
+    if(!strcmp(argv[0], binfile)){
+        memset(binfile, '\0', strlen(binfile));
+        strcpy(binfile, win_bname_parser(argv[0]));
     }
 
     if(argc == 1){
-        usage(srcfile);
+        usage(binfile);
         fprintf(stderr, "\nFor more, check help section:\
-        \n    %s -h\n\n", srcfile);
+        \n    %s -h\n\n", binfile);
         return -1;
 
     } else if(argc == 2 && !strcmp(argv[1], "-h")){
-        usage(srcfile);
+        usage(binfile);
         help();
         return 1;
 
@@ -289,9 +289,9 @@ int main(int argc, char**argv){
                     !strcmp(argv[i+1], opt_o) ||
                     !strcmp(argv[i+1], opt_i)){
                         fprintf(stderr, "\nInputError: file not detected.\n");
-                        usage(srcfile);
+                        usage(binfile);
                         fprintf(stderr, "\nFor more, check help section:\
-                        \n    %s -h\n\n", srcfile);
+                        \n    %s -h\n\n", binfile);
                         return -1;
                 }
                 strcpy(in_file, argv[i+1]);
@@ -313,16 +313,16 @@ int main(int argc, char**argv){
                     !strcmp(argv[i+1], opt_o) ||
                     !strcmp(argv[i+1], opt_f)){
                         fprintf(stderr, "\nInputError: no input detected.\n");
-                        usage(srcfile);
+                        usage(binfile);
                         fprintf(stderr, "\nFor more, check help section:\
-                        \n    %s -h\n\n", srcfile);
+                        \n    %s -h\n\n", binfile);
                         return -1;
                 }
                 arg_in = argv[i+1];
                 opt_i_stat = 1;
 
                 if(opt_f_stat && opt_i_stat){
-                    usage(srcfile);
+                    usage(binfile);
                     help();
                     return -1;
                 }

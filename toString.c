@@ -36,9 +36,66 @@ char *basename(char const *path){
 
     if(strcmp(path, unix_basename_parser(path)))
         return strdup(unix_basename_parser(path));
-    else
-        return strdup(win_basename_parser(path));
+
+    return strdup(win_basename_parser(path));
 }
+
+
+int validateOctalValue(char*octal_value) {
+
+    int val = AtoI(octal_value);
+    // printf("%d ", val);
+    char str[4];
+    ItoA(val, str);
+    
+    /* Octal values can't have the value 8 and 9,
+       so searches for them, if present
+       it returns -1 */
+    if(strcspn(str, "89") != strlen(str))
+        return -1;
+
+    if(val < 0 || val > 176)
+        return -2;
+
+    return 0;
+}
+
+int validateHexValue(char*hex_value) {
+
+    /* Hex values can't have values other than
+       "123456789ABCDEF" */
+    if(strspn(hex_value, "0123456789ABCDEFabcdef") != strlen(hex_value))
+        return -1;
+    
+    if(strlen(hex_value) > 2)
+        return -2;
+
+    return 0;
+}
+
+int validateIntValue(char*int_value) {
+
+    if(AtoI(int_value) < 0 || AtoI(int_value) > 126)
+        return -1;
+
+    return 0;
+}
+
+int validateBinValue(char*bin_value) {
+
+    /* Binary values can't have values other 
+       than 0 and 1 */
+    for(int i = 0; i < strlen(bin_value); ++i){
+        if(*(bin_value+i) != 48 && *(bin_value+i) != 49)
+            return -1;
+    }
+
+    if(binToDec(bin_value) > 126)
+        return -2;
+
+    return 0;
+}
+
 
 int octal_to_string_arg(char *octdump, int outfile_stat, char* file_out){
 
@@ -54,13 +111,21 @@ int octal_to_string_arg(char *octdump, int outfile_stat, char* file_out){
     token = strtok(octdump, " ");
     
     while( token != NULL ) {
+        
+        if(validateOctalValue(token) == -1) {
+            fprintf(stderr, "\n\nValueError: detected incorrect octal value.");
+            return 1;
+
+        } else if(validateOctalValue(token) == -2) {
+            fprintf(stderr, "\n\nValueError: octal value's greater than expected.");
+            return 1;
+        }
 
         ch = octToDec(AtoI(token));
-        if(outfile_stat == 1){
-            fputc(ch, out);
-        } else {
-            printf("%c", ch);
-        }
+
+        if(outfile_stat == 1) fputc(ch, out);
+        else printf("%c", ch);
+
         token = strtok(NULL, " ");
     }
 
@@ -86,12 +151,16 @@ int decimal_to_string_arg(char *intdump, int outfile_stat, char* file_out){
     
     while( token != NULL ) {
 
+        if(validateIntValue(token) == -1) {
+            fprintf(stderr, "\n\nValueError: decimal value out of range.");
+            return 1;
+        }    
+
         ch  = AtoI(token);
-        if(outfile_stat == 1){
-            fputc(ch, out);
-        } else {
-            printf("%c", ch);
-        }
+
+        if(outfile_stat == 1) fputc(ch, out);
+        else printf("%c", ch);
+
         token = strtok(NULL, " ");
     }
     
@@ -116,12 +185,21 @@ int binary_to_string_arg(char *bindump, int outfile_stat, char* file_out){
     token = strtok(bindump, " ");
     
     while( token != NULL ) {
-        ch = binToDec(token);
-        if(outfile_stat == 1){
-            fputc(ch, out);
-        } else {
-            printf("%c", ch);
+
+        if(validateBinValue(token) == -1) {
+            fprintf(stderr, "\n\nValueError: detected incorrect binary value.");
+            return 1;
+
+        } else if(validateBinValue(token) == -2) {
+            fprintf(stderr, "\n\nValueError: binary value's greater than expected.");
+            return 1;
         }
+
+        ch = binToDec(token);
+
+        if(outfile_stat == 1) fputc(ch, out);
+        else printf("%c", ch);
+
         token = strtok(NULL, " ");
     }
 
@@ -146,15 +224,24 @@ int hexadecimal_to_string_arg(char *hexdump, int outfile_stat, char* file_out){
     token = strtok(hexdump, " ");
     
     while( token != NULL ) {
-        ch = hexToDec(token);
-        if(outfile_stat == 1){
-            fputc(ch, out);
-        } else {
-            printf("%c", ch);
+        
+        if(validateHexValue(token) == -1) {
+            fprintf(stderr, "\n\nValueError: detected incorrect hex value.");
+            return 1;     
+
+        } else if(validateHexValue(token) == -2) {
+            fprintf(stderr, "\n\nValueError: hexadecimal value's greater than expected.");
+            return 1;
         }
+
+        ch = hexToDec(token);
+
+        if(outfile_stat == 1) fputc(ch, out);
+        else printf("%c", ch);
+
         token = strtok(NULL, " ");
     }
-    
+
     fclose(out);
     remove("nil");
 
@@ -192,39 +279,63 @@ int to_string_infile(char* file_in, int outfile_stat, char* file_out, char* type
         buff[strcspn(buff, "\n")] = 0;
         if(!strcmp(type, "-od")){
 
-            ch = octToDec(AtoI(buff));
-            if(outfile_stat == 1){
-                fputc(ch, out);
-            } else {
-                printf("%c", ch);
+            if(validateOctalValue(buff) == -1) {
+                fprintf(stderr, "\n\nValueError: detected incorrect octal value.");
+                return 1;
+                
+            } else if(validateOctalValue(buff) == -2) {
+                fprintf(stderr, "\n\nValueError: octal value's greater than expected.");
+                return 1;
             }
+
+            ch = octToDec(AtoI(buff));
+
+            if(outfile_stat == 1) fputc(ch, out);
+            else printf("%c", ch);
 
         } else if(!strcmp(type, "-hd")){
 
-            ch = hexToDec(buff);
-            if(outfile_stat == 1){
-                fputc(ch, out);
-            } else {
-                printf("%c", ch);
+            if(validateHexValue(buff) == -1) {
+                fprintf(stderr, "\n\nValueError: detected incorrect hex value.");
+                return 1;     
+
+            } else if(validateHexValue(buff) == -2) {
+                fprintf(stderr, "\n\nValueError: hexadecimal value's greater than expected.");
+                return 1;
             }
+
+            ch = hexToDec(buff);
+
+            if(outfile_stat == 1) fputc(ch, out);
+            else printf("%c", ch);
 
         } else if(!strcmp(type, "-bd")){
 
-            ch = binToDec(buff);
-            if(outfile_stat == 1){
-                fputc(ch, out);
-            } else {
-                printf("%c", ch);
+            if(validateBinValue(buff) == -1) {
+                fprintf(stderr, "\n\nValueError: detected incorrect binary value.");
+                return 1;
+
+            } else if(validateBinValue(buff) == -2) {
+                fprintf(stderr, "\n\nValueError: binary value's greater than expected.");
+                return 1;
             }
+
+            ch = binToDec(buff);
+
+            if(outfile_stat == 1) fputc(ch, out);
+            else printf("%c", ch);
 
         } else if(!strcmp(type, "-id")){
 
-            ch = AtoI(buff);
-            if(outfile_stat == 1){
-                fputc(ch, out);
-            } else {
-                printf("%c", ch);
-            }
+            if(validateIntValue(buff) == -1) {
+                fprintf(stderr, "\n\nValueError: decimal value out of range.");
+                return 1;
+            }    
+
+            ch  = AtoI(buff);
+
+            if(outfile_stat == 1) fputc(ch, out);
+            else printf("%c", ch);
 
         } 
     }
@@ -332,7 +443,7 @@ int main(int argc, char**argv){
                     help();
                     return -1;
                 }
-
+        
             } else{
                 continue;
             }

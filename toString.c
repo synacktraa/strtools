@@ -5,7 +5,7 @@
 #define BUFFER 20
 
 
-char *basename(char const *path);
+char *basename(char const *);
 int octal_to_string_arg(char *, int, char*);
 int decimal_to_string_arg(char *, int, char*);
 int binary_to_string_arg(char *, int, char*);

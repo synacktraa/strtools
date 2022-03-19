@@ -1,3 +1,4 @@
+
 int power(int base, int p){ 
    int result = 1;
    if(p){ 
@@ -11,11 +12,13 @@ int power(int base, int p){
    }
 }
 
+
 int isDigit(int ch){
    if(ch >= 48 && ch <= 57)
       return 1;
    return 0;
 }
+
 
 int AtoI(const char* str){ 
    int res = 0;
@@ -30,6 +33,39 @@ int AtoI(const char* str){
       ptr++;
    }
    return res;
+}
+
+
+void reverse(char*str){
+   
+   int len = 0, temp;
+   char*ptr = str;
+   while(*ptr != '\0'){
+      len++;
+      ptr++;
+   }
+   int i = 0, j = len-1;
+   while(i < j){
+      temp  = *(str+i);
+      *(str+i) = *(str+j);
+      *(str+j) = temp;
+      ++i;
+      --j;
+   }
+}
+
+
+void ItoA(int dec, char*dest){
+   int i = 0;
+   if(dec == 0){dest[i++] = 48;}
+   else{
+   while(dec){
+         dest[i++] = (dec%10) + 48;
+         dec /= 10;
+      }
+   *(dest+i) = '\0';
+   reverse(dest);
+   }
 }
 
 
@@ -88,13 +124,12 @@ int binToDec(char* binary){
     
     int i = 0, j, k;
     int dec = 0;
-    while(*(binary+i) != '\0')
+    while(*(binary+i) != '\0'){
         ++i;
+    }
 
     for(j = i-1, k = 0; j >= 0; --j, ++k)
         dec += (*(binary+k)-48)*power(2,j); 
 
     return dec;
 }
-
-

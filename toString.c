@@ -353,9 +353,9 @@ int main(int argc, char**argv){
     auto void usage(char*);
     auto void help( );
 
-    char opt_hd[4] = "-hd", opt_bd[4] = "-bd", opt_od[4] = "-od", opt_id[4] = "-id", 
-        opt_f[3] = "-f", opt_o[3] = "-o", opt_i[3] = "-i";
-    char in_file[50], out_file[50], type[5]; 
+    char *opt_hd = "-hd", *opt_bd = "-bd", *opt_od = "-od", *opt_id = "-id", 
+         *opt_f = "-f", *opt_o = "-o", *opt_i = "-i";
+    char *in_file, *out_file, type[5]; 
     char* arg_in;
     int i = 0, opt_f_stat = 0, opt_o_stat = 0, opt_i_stat = 0, type_stat = 0;
 
@@ -411,7 +411,7 @@ int main(int argc, char**argv){
                         \n    %s -h\n\n", basename(argv[0]));
                         return -1;
                 }
-                strcpy(in_file, argv[i+1]);
+                in_file = argv[i+1];
                 break;
             } else{
                 continue;
@@ -461,10 +461,10 @@ int main(int argc, char**argv){
                     !strcmp(argv[i+1], opt_id) || 
                     !strcmp(argv[i+1], opt_f) ||
                     !strcmp(argv[i+1], opt_i)){
-                        strcpy(out_file, "toString_out");
+                        out_file = "toString_out";
                         break;
                 } else {
-                    strcpy(out_file, argv[i+1]);
+                    out_file = argv[i+1];
                     break;
                 }
 
@@ -511,7 +511,7 @@ int main(int argc, char**argv){
     }
 
         if(opt_o_stat == 0)
-            strcpy(out_file, "nil");
+            out_file = "nil";
 
         if(opt_f_stat == 0 && opt_i_stat == 0){
             fprintf(stderr, "\nInputError: no data or file detected.\n");

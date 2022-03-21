@@ -128,7 +128,6 @@ int octal_to_string_arg(char *octdump, int outfile_stat, char* file_out){
 
         token = strtok(NULL, " ");
     }
-
     fclose(out);
     remove("nil");
 
@@ -366,10 +365,10 @@ int main(int argc, char**argv){
 
     void help(){
         fprintf(stderr, "\n|CLI options|:-\
-        \n   type:\n      -od = The data passed should be octal.\
-        \n      -bd = The data passed should be binary.\
-        \n      -id = The data passed should be decimal.\
-        \n      -hd = The data passed should be hexadecimal.\
+        \n   type:\n      -od = processes data as octal.\
+        \n      -bd = processes data as binary.\
+        \n      -id = processes data as decimal.\
+        \n      -hd = processes data as hexadecimal.\
         \n\n   input:\n      -i = takes next argument as data string.\
         \n      -f = takes next argument as filename.\
         \n\n   optional:\n      -o = takes next argument as filename.\

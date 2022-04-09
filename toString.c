@@ -4,7 +4,6 @@
 
 #define BUFFER 20
 
-
 char *basename(char const *);
 int octal_to_string_arg(char *, int, char*);
 int decimal_to_string_arg(char *, int, char*);
@@ -12,32 +11,16 @@ int binary_to_string_arg(char *, int, char*);
 int hexadecimal_to_string_arg(char *, int, char*);
 int to_string_infile(char*, int, char*, char*);
 
+char slash = '/', end = 0;
 
 char *basename(char const *path){
 
-    auto char *win_basename_parser(char const *);
-    auto char *unix_basename_parser(char const *path);
-    
-    char *win_basename_parser(char const *path) {
-        char *s = strrchr(path, '\\');
-        if(!s) 
-            return strdup(path);
-        else 
-            return strdup(s + 1);
-    }
+    char *s = strrchr(path, slash);
+    if(!s) 
+        return strdup(path);
+    else 
+        return strdup(s + 1);
 
-    char *unix_basename_parser(char const *path) {
-        char *s = strrchr(path, '/');
-        if(!s) 
-            return strdup(path);
-        else 
-            return strdup(s + 1);
-    }
-
-    if(strcmp(path, unix_basename_parser(path)))
-        return strdup(unix_basename_parser(path));
-
-    return strdup(win_basename_parser(path));
 }
 
 
@@ -128,6 +111,8 @@ int octal_to_string_arg(char *octdump, int outfile_stat, char* file_out){
 
         token = strtok(NULL, " ");
     }
+    putchar(end);
+
     fclose(out);
     remove("nil");
 
@@ -162,6 +147,7 @@ int decimal_to_string_arg(char *intdump, int outfile_stat, char* file_out){
 
         token = strtok(NULL, " ");
     }
+    putchar(end);
     
     fclose(out);
     remove("nil");
@@ -201,6 +187,7 @@ int binary_to_string_arg(char *bindump, int outfile_stat, char* file_out){
 
         token = strtok(NULL, " ");
     }
+    putchar(end);
 
     fclose(out);
     remove("nil");
@@ -240,6 +227,7 @@ int hexadecimal_to_string_arg(char *hexdump, int outfile_stat, char* file_out){
 
         token = strtok(NULL, " ");
     }
+    putchar(end);
 
     fclose(out);
     remove("nil");
@@ -338,7 +326,7 @@ int to_string_infile(char* file_in, int outfile_stat, char* file_out, char* type
 
         } 
     }
-
+    putchar(end);
     fclose(fp); fclose(out);
     remove("temp");
     remove("nil");
@@ -348,6 +336,14 @@ int to_string_infile(char* file_in, int outfile_stat, char* file_out, char* type
 
 
 int main(int argc, char**argv){
+
+    #ifdef _WIN32
+        end = 0;
+        slash = '\\';
+    #elif __unix__
+        end = 10;
+        slash = '/';
+    #endif
 
     auto void usage(char*);
     auto void help( );

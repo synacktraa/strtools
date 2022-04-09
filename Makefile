@@ -17,8 +17,5 @@ clean:
 ifeq ($(OS),Windows_NT)
 	del *.o, toString.exe
 else
-	CHECK := $(shell uname)
-	ifeq ($(CHECK), Linux)
-		rm *.o toString
-	endif
+	rm *.o toString
 endif

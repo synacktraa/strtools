@@ -106,7 +106,7 @@ int validateHexValue(char*hex_value) {
 
     /* Hex values can't have values other than
        "123456789ABCDEF" */
-    if(strspn(hex_value, "0123456789ABCDEFabcdef") != strlen(hex_value))
+    if(strspn(hex_value, "0123456789ABCDEFabcdef\r") != strlen(hex_value))
         return -1;
     
     if(strlen(hex_value) > 2)

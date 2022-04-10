@@ -20,6 +20,15 @@ int isDigit(int ch){
 }
 
 
+int Strlen(char *str){
+   int cnt = 0;
+   while(*str != '\0'){ 
+         cnt++; 
+         str++; 
+   }
+   return cnt;
+}
+
 int AtoI(const char* str){ 
    int res = 0;
    char *ptr = (char*)str;

@@ -75,7 +75,7 @@ char* get_file_data(char*file) {
     if(data_storage == NULL || buffer == NULL)
         exit(1);
 
-    memset(data_storage, 0, strlen(data_storage));
+    memset(data_storage, 0, Strlen(data_storage));
     while (fgets(buffer, buffer_len, file_in))
         strcat(data_storage, buffer);
 
@@ -93,7 +93,7 @@ int validateOctalValue(char*octal_value) {
     /* Octal values can't have the value 8 and 9,
        so searches for them, if present
        it returns -1 */
-    if(strcspn(str, "89") != strlen(str))
+    if(strcspn(str, "89") != Strlen(str))
         return -1;
 
     if(val < 0 || val > 176)
@@ -106,11 +106,11 @@ int validateHexValue(char*hex_value) {
 
     /* Hex values can't have values other than
        "123456789ABCDEF" */
-    if(strspn(hex_value, "0123456789ABCDEFabcdef ") != strlen(hex_value)){
+    if(strspn(hex_value, "0123456789ABCDEFabcdef ") != Strlen(hex_value)){
         return -1;
     }
     
-    if(strlen(hex_value) > 2)
+    if(Strlen(hex_value) > 2)
         return -2;
 
     return 0;
@@ -128,7 +128,7 @@ int validateBinValue(char*bin_value) {
 
     /* Binary values can't have values other 
        than 0 and 1 */
-    for(int i = 0; i < strlen(bin_value); ++i){
+    for(int i = 0; i < Strlen(bin_value); ++i){
         if(*(bin_value+i) != 48 && *(bin_value+i) != 49)
             return -1;
     }
@@ -273,7 +273,7 @@ int hexadecimal_to_string_arg(char *hexdump, int outfile_stat, char* file_out){
     token = strtok(hexdump, " ");
     if(validateHexValue(token) == -1) {
         fprintf(stderr, "ValueError: detected incorrect hex value.");
-        return 1;     
+        exit(1);   
 
     }
     while( token != NULL ) {

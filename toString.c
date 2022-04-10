@@ -335,6 +335,39 @@ int to_string_infile(char* file_in, int outfile_stat, char* file_out, char* type
 }
 
 
+void usage(char* param){
+    fprintf(stderr, "\nUsage: %s <type> <input> data|file -o outfile.txt\n", param);
+}
+
+void help(){
+    fprintf(stderr, "\n|CLI options|:-\
+    \n   type:\n      -od = processes data as octal.\
+    \n      -bd = processes data as binary.\
+    \n      -id = processes data as decimal.\
+    \n      -hd = processes data as hexadecimal.\
+    \n\n   input:\n      -i = takes next argument as data string.\
+    \n      -f = takes next argument as filename.\
+    \n\n   optional:\n      -o = takes next argument as filename.\
+    \n\t   (if filename is null, it's set to toString_out as filename.)\
+    \n\t   [if '-o' is not used, result is printed to STDOUT.]\n\n");
+}
+
+
+int arg_validate(char* arg){
+    if(arg == NULL || 
+        !strcmp(arg, "-hd") ||
+        !strcmp(arg, "-bd") || 
+        !strcmp(arg, "-od") || 
+        !strcmp(arg, "-id") || 
+        !strcmp(arg, "-f") ||
+        !strcmp(arg, "-i") ||
+        !strcmp(arg, "-o")){
+            return -1;
+        }
+    return 0;
+}
+
+
 int main(int argc, char**argv){
 
     #ifdef _WIN32
@@ -345,32 +378,11 @@ int main(int argc, char**argv){
         slash = '/';
     #endif
 
-    auto void usage(char*);
-    auto void help( );
-
     char *opt_hd = "-hd", *opt_bd = "-bd", *opt_od = "-od", *opt_id = "-id", 
          *opt_f = "-f", *opt_o = "-o", *opt_i = "-i";
     char *in_file, *out_file, type[5]; 
     char* arg_in;
     int i = 0, opt_f_stat = 0, opt_o_stat = 0, opt_i_stat = 0, type_stat = 0;
-
-    
-    void usage(char* param){
-        fprintf(stderr, "\nUsage: %s <type> <input> data|file -o outfile.txt\n", param);
-    }
-
-    void help(){
-        fprintf(stderr, "\n|CLI options|:-\
-        \n   type:\n      -od = processes data as octal.\
-        \n      -bd = processes data as binary.\
-        \n      -id = processes data as decimal.\
-        \n      -hd = processes data as hexadecimal.\
-        \n\n   input:\n      -i = takes next argument as data string.\
-        \n      -f = takes next argument as filename.\
-        \n\n   optional:\n      -o = takes next argument as filename.\
-        \n\t   (if filename is null, it's set to toString_out as filename.)\
-        \n\t   [if '-o' is not used, result is printed to STDOUT.]\n\n");
-    }
 
     if(argc == 1){
         usage(basename(argv[0]));
@@ -393,18 +405,12 @@ int main(int argc, char**argv){
             if(!strcmp(argv[i], opt_f)){
 
                 opt_f_stat = 1;
-                if(argv[i+1] == NULL || 
-                    !strcmp(argv[i+1], opt_hd) ||
-                    !strcmp(argv[i+1], opt_bd) || 
-                    !strcmp(argv[i+1], opt_od) || 
-                    !strcmp(argv[i+1], opt_id) || 
-                    !strcmp(argv[i+1], opt_o) ||
-                    !strcmp(argv[i+1], opt_i)){
-                        fprintf(stderr, "\nInputError: file not detected.\n");
-                        usage(basename(argv[0]));
-                        fprintf(stderr, "\nFor more, check help section:\
-                        \n    %s -h\n\n", basename(argv[0]));
-                        return -1;
+                if(arg_validate(argv[i+1]) == -1){
+                    fprintf(stderr, "\nInputError: file not detected.\n");
+                    usage(basename(argv[0]));
+                    fprintf(stderr, "\nFor more, check help section:\
+                    \n    %s -h\n\n", basename(argv[0]));
+                    return -1;
                 }
                 in_file = argv[i+1];
                 break;
@@ -417,18 +423,12 @@ int main(int argc, char**argv){
         for(i = 0; i < argc; i++){
             if(!strcmp(argv[i], opt_i)){
 
-                if(argv[i+1] == NULL || 
-                    !strcmp(argv[i+1], opt_hd) ||
-                    !strcmp(argv[i+1], opt_bd) || 
-                    !strcmp(argv[i+1], opt_od) || 
-                    !strcmp(argv[i+1], opt_id) || 
-                    !strcmp(argv[i+1], opt_o) ||
-                    !strcmp(argv[i+1], opt_f)){
-                        fprintf(stderr, "\nInputError: no input detected.\n");
-                        usage(basename(argv[0]));
-                        fprintf(stderr, "\nFor more, check help section:\
-                        \n    %s -h\n\n", basename(argv[0]));
-                        return -1;
+                if(arg_validate(argv[i+1]) == -1){
+                    fprintf(stderr, "\nInputError: no input detected.\n");
+                    usage(basename(argv[0]));
+                    fprintf(stderr, "\nFor more, check help section:\
+                    \n    %s -h\n\n", basename(argv[0]));
+                    return -1;
                 }
                 arg_in = argv[i+1];
                 opt_i_stat = 1;
@@ -443,26 +443,17 @@ int main(int argc, char**argv){
                 continue;
             }
         }
-            
 
         for(i = 0; i < argc; i++){
             if(!strcmp(argv[i], opt_o)){
 
                 opt_o_stat = 1;
-                if(argv[i+1] == NULL || 
-                    !strcmp(argv[i+1], opt_hd) ||
-                    !strcmp(argv[i+1], opt_bd) || 
-                    !strcmp(argv[i+1], opt_od) || 
-                    !strcmp(argv[i+1], opt_id) || 
-                    !strcmp(argv[i+1], opt_f) ||
-                    !strcmp(argv[i+1], opt_i)){
-                        out_file = "toString_out";
-                        break;
+                if(arg_validate(argv[i+1]) == -1){
+                    out_file = "toString_out";
                 } else {
                     out_file = argv[i+1];
-                    break;
                 }
-
+                break;
             } else{
                 continue;
             }

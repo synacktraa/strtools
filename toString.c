@@ -106,12 +106,13 @@ int octal_to_string_arg(char *octdump, int outfile_stat, char* file_out){
 
         ch = octToDec(AtoI(token));
 
-        if(outfile_stat == 1) fputc(ch, out);
+        if(outfile_stat) fputc(ch, out);
         else printf("%c", ch);
 
         token = strtok(NULL, " ");
     }
-    putchar(end);
+    if(!outfile_stat)
+        putchar(end);
 
     fclose(out);
     remove("nil");
@@ -142,12 +143,13 @@ int decimal_to_string_arg(char *intdump, int outfile_stat, char* file_out){
 
         ch  = AtoI(token);
 
-        if(outfile_stat == 1) fputc(ch, out);
+        if(outfile_stat) fputc(ch, out);
         else printf("%c", ch);
 
         token = strtok(NULL, " ");
     }
-    putchar(end);
+    if(!outfile_stat)
+        putchar(end);
     
     fclose(out);
     remove("nil");
@@ -182,12 +184,13 @@ int binary_to_string_arg(char *bindump, int outfile_stat, char* file_out){
 
         ch = binToDec(token);
 
-        if(outfile_stat == 1) fputc(ch, out);
+        if(outfile_stat) fputc(ch, out);
         else printf("%c", ch);
 
         token = strtok(NULL, " ");
     }
-    putchar(end);
+    if(!outfile_stat)
+        putchar(end);
 
     fclose(out);
     remove("nil");
@@ -222,12 +225,13 @@ int hexadecimal_to_string_arg(char *hexdump, int outfile_stat, char* file_out){
 
         ch = hexToDec(token);
 
-        if(outfile_stat == 1) fputc(ch, out);
+        if(outfile_stat) fputc(ch, out);
         else printf("%c", ch);
 
         token = strtok(NULL, " ");
     }
-    putchar(end);
+    if(!outfile_stat)
+        putchar(end);
 
     fclose(out);
     remove("nil");
@@ -250,6 +254,7 @@ int to_string_infile(char* file_in, int outfile_stat, char* file_out, char* type
     while((ch = fgetc(in)) != EOF){
         if(ch == ' ')
             ch = '\n';
+        putchar(ch);
         fputc(ch, tmp);
     }
 
@@ -277,7 +282,7 @@ int to_string_infile(char* file_in, int outfile_stat, char* file_out, char* type
 
             ch = octToDec(AtoI(buff));
 
-            if(outfile_stat == 1) fputc(ch, out);
+            if(outfile_stat) fputc(ch, out);
             else printf("%c", ch);
 
         } else if(!strcmp(type, "-hd")){
@@ -293,7 +298,7 @@ int to_string_infile(char* file_in, int outfile_stat, char* file_out, char* type
 
             ch = hexToDec(buff);
 
-            if(outfile_stat == 1) fputc(ch, out);
+            if(outfile_stat) fputc(ch, out);
             else printf("%c", ch);
 
         } else if(!strcmp(type, "-bd")){
@@ -309,7 +314,7 @@ int to_string_infile(char* file_in, int outfile_stat, char* file_out, char* type
 
             ch = binToDec(buff);
 
-            if(outfile_stat == 1) fputc(ch, out);
+            if(outfile_stat) fputc(ch, out);
             else printf("%c", ch);
 
         } else if(!strcmp(type, "-id")){
@@ -321,12 +326,14 @@ int to_string_infile(char* file_in, int outfile_stat, char* file_out, char* type
 
             ch  = AtoI(buff);
 
-            if(outfile_stat == 1) fputc(ch, out);
+            if(outfile_stat) fputc(ch, out);
             else printf("%c", ch);
 
         } 
     }
-    putchar(end);
+    if(!outfile_stat)
+        putchar(end);
+
     fclose(fp); fclose(out);
     remove("temp");
     remove("nil");

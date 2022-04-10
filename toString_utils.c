@@ -90,15 +90,6 @@ int hexToDec(char* h){
 
     int dec = 0, bitshift = 0, cnt = 0;
     char* ptr = h; 
-    
-    auto int decimal(int,int,int); 
-    int decimal(int bit, int count, int minValue){ 
-
-        int num = 0, hexPow = 0;
-        hexPow = power(16, bit); 
-        num += (*(h+count)-minValue)*hexPow;
-        return num; 
-    } 
 
     while(*ptr != '\0'){ 
         cnt++; 
@@ -108,11 +99,11 @@ int hexToDec(char* h){
     while(cnt >= 0){ 
         --cnt;
         if((*(h+cnt) >=97 && *(h+cnt) <=102)) 
-            dec += decimal(bitshift, cnt, 87); 
+            dec += (*(h+cnt)-87)*power(16, bitshift); 
         else if((*(h+cnt) >=65 && *(h+cnt) <=70)) 
-            dec += decimal(bitshift, cnt, 55); 
+            dec += (*(h+cnt)-55)*power(16, bitshift); 
         else if((*(h+cnt) >=48 && *(h+cnt) <=57)) 
-            dec += decimal(bitshift, cnt, 48); 
+            dec += (*(h+cnt)-48)*power(16, bitshift);; 
         bitshift++; 
     }
 

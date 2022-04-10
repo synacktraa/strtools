@@ -344,13 +344,7 @@ int main(int argc, char**argv){
     char* storage;
     int i = 0, opt_f_stat = 0, opt_o_stat = 0, opt_i_stat = 0, type_stat = 0;
 
-    if(argc == 1){
-        usage(basename(argv[0]));
-        fprintf(stderr, "\nFor more, check help section:\
-        \n    %s -h\n\n", basename(argv[0]));
-        return -1;
-
-    } else if(argc == 2 && !strcmp(argv[1], "-h")){
+    if(argc == 2 && !strcmp(argv[1], "-h")){
         usage(basename(argv[0]));
         help();
         return 1;
@@ -382,7 +376,7 @@ int main(int argc, char**argv){
 
         for(i = 0; i < argc; i++){
             if(!strcmp(argv[i], opt_i)){
-                
+
                 opt_i_stat = 1;
                 if(arg_validate(argv[i+1]) == -1){
                     fprintf(stderr, "\nInputError: no input detected.\n");
@@ -454,6 +448,12 @@ int main(int argc, char**argv){
             return -1;
         }
         
+    } else{
+        usage(basename(argv[0]));
+        fprintf(stderr, "\nFor more, check help section:\
+        \n    %s -h\n\n", basename(argv[0]));
+        return -1;
+
     }
 
     if(in_file != NULL){

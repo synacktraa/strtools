@@ -143,7 +143,6 @@ int validateBinValue(char*bin_value) {
 int octal_to_string_arg(char *octdump, int outfile_stat, char* file_out){
 
     char *token;
-    char ch;
     FILE*out = fopen(file_out, "w");
 
     if(out == NULL){
@@ -164,7 +163,7 @@ int octal_to_string_arg(char *octdump, int outfile_stat, char* file_out){
             return 1;
         }
 
-        ch = octToDec(AtoI(token));
+        char ch = octToDec(AtoI(token));
 
         if(outfile_stat) fputc(ch, out);
         else printf("%c", ch);
@@ -184,7 +183,6 @@ int octal_to_string_arg(char *octdump, int outfile_stat, char* file_out){
 int decimal_to_string_arg(char *intdump, int outfile_stat, char* file_out){
 
     char *token;
-    char ch;
     FILE*out = fopen(file_out, "w");
 
     if(out == NULL){
@@ -201,7 +199,7 @@ int decimal_to_string_arg(char *intdump, int outfile_stat, char* file_out){
             return 1;
         }    
 
-        ch  = AtoI(token);
+        char ch  = AtoI(token);
 
         if(outfile_stat) fputc(ch, out);
         else printf("%c", ch);
@@ -221,7 +219,6 @@ int decimal_to_string_arg(char *intdump, int outfile_stat, char* file_out){
 int binary_to_string_arg(char *bindump, int outfile_stat, char* file_out){
 
     char *token;
-    char ch;
     FILE*out = fopen(file_out, "w");
 
     if(out == NULL){
@@ -242,7 +239,7 @@ int binary_to_string_arg(char *bindump, int outfile_stat, char* file_out){
             return 1;
         }
 
-        ch = binToDec(token);
+        char ch = binToDec(token);
 
         if(outfile_stat) fputc(ch, out);
         else printf("%c", ch);
@@ -262,7 +259,6 @@ int binary_to_string_arg(char *bindump, int outfile_stat, char* file_out){
 int hexadecimal_to_string_arg(char *hexdump, int outfile_stat, char* file_out){
 
     char *token;
-    char ch;
     FILE*out = fopen(file_out, "w");
 
     if(out == NULL){
@@ -282,7 +278,7 @@ int hexadecimal_to_string_arg(char *hexdump, int outfile_stat, char* file_out){
             return 1;
         }
 
-        ch = hexToDec(token);
+        char ch = hexToDec(token);
 
         if(outfile_stat) fputc(ch, out);
         else printf("%c", ch);
@@ -386,7 +382,8 @@ int main(int argc, char**argv){
 
         for(i = 0; i < argc; i++){
             if(!strcmp(argv[i], opt_i)){
-
+                
+                opt_i_stat = 1;
                 if(arg_validate(argv[i+1]) == -1){
                     fprintf(stderr, "\nInputError: no input detected.\n");
                     usage(basename(argv[0]));
@@ -395,7 +392,6 @@ int main(int argc, char**argv){
                     return -1;
                 }
                 storage = argv[i+1];
-                opt_i_stat = 1;
 
                 if(opt_f_stat && opt_i_stat){
                     usage(basename(argv[0]));

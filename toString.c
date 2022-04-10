@@ -106,8 +106,10 @@ int validateHexValue(char*hex_value) {
 
     /* Hex values can't have values other than
        "123456789ABCDEF" */
-    if(strspn(hex_value, "0123456789ABCDEFabcdef\r") != strlen(hex_value))
+    if(strspn(hex_value, "0123456789ABCDEFabcdef") != strlen(hex_value)){
+
         return -1;
+    }
     
     if(strlen(hex_value) > 2)
         return -2;
@@ -272,7 +274,7 @@ int hexadecimal_to_string_arg(char *hexdump, int outfile_stat, char* file_out){
     token = strtok(hexdump, " ");
     
     while( token != NULL ) {
-        
+        puts(token);    
         if(validateHexValue(token) == -1) {
             fprintf(stderr, "\n\nValueError: detected incorrect hex value.");
             return 1;     
@@ -285,7 +287,7 @@ int hexadecimal_to_string_arg(char *hexdump, int outfile_stat, char* file_out){
         ch = hexToDec(token);
 
         if(outfile_stat) fputc(ch, out);
-        else printf("%c", ch);
+        // else printf("%c", ch);
 
         token = strtok(NULL, " ");
     }

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "toString_utils.h"
 
 #define BUFFER 20
@@ -24,10 +25,68 @@ char *basename(char const *path){
 }
 
 
+int get_filesize(char file_name[]){
+
+    FILE* fp = fopen(file_name, "r");
+    if (fp == NULL) {
+        return -1;
+    }
+    fseek(fp, 0L, SEEK_END);
+    int res = ftell(fp);
+    fclose(fp);
+  
+    return res;
+}
+
+
+int checkIfFileExists(const char * filename) {
+
+    FILE *file;
+    if((file = fopen(filename, "r")) != NULL) {
+        fclose(file);
+        return 1;
+    }
+    return 0;
+}
+
+
+char* get_file_data(char*file) {
+
+/*
+    Checks if file exists on the system, if yes
+    stores the file size in buffer_len var
+    by evaulating get_filesize function which 
+    retrieves the file size and then reads the
+    file line by line and stores it in buffer 
+    and then concatenate it to data_storage
+    and finally frees the buffer and return data_storage
+*/
+    if(!checkIfFileExists(file)) {
+        fprintf(stderr, "FileError: can't open %s file.", file);
+        exit(1);
+    }
+
+    int buffer_len = get_filesize(file)+2;
+    
+    FILE * file_in = fopen(file, "r");
+    char* data_storage = (char*)malloc(sizeof(char) * buffer_len);
+    char* buffer = (char*)malloc(sizeof(char) * buffer_len);
+    
+    if(data_storage == NULL || buffer == NULL)
+        exit(1);
+
+    memset(data_storage, 0, strlen(data_storage));
+    while (fgets(buffer, buffer_len, file_in))
+        strcat(data_storage, buffer);
+
+    free(buffer);
+    return data_storage;
+}
+
 int validateOctalValue(char*octal_value) {
 
     int val = AtoI(octal_value);
-    // printf("%d ", val);
+    
     char str[4];
     ItoA(val, str);
     
@@ -240,108 +299,6 @@ int hexadecimal_to_string_arg(char *hexdump, int outfile_stat, char* file_out){
 }
 
 
-int to_string_infile(char* file_in, int outfile_stat, char* file_out, char* type){
-
-    char ch;
-    FILE*in = fopen(file_in, "r");
-    FILE*tmp = fopen("temp", "w");
-
-    if(in == NULL || tmp == NULL){
-        fprintf(stderr, "FileError: file can't be opened.");
-        return -1;
-    }
-
-    while((ch = fgetc(in)) != EOF){
-        if(ch == ' ')
-            ch = '\n';
-        putchar(ch);
-        fputc(ch, tmp);
-    }
-
-    fclose(in);
-    fclose(tmp);
-
-    ch = 0;
-    FILE*fp = fopen("temp", "r");
-    FILE*out = fopen(file_out, "w");
-
-    char buff[BUFFER];
-    while (fgets(buff, BUFFER, fp)){
-
-        buff[strcspn(buff, "\n")] = 0;
-        if(!strcmp(type, "-od")){
-
-            if(validateOctalValue(buff) == -1) {
-                fprintf(stderr, "\n\nValueError: detected incorrect octal value.");
-                return 1;
-                
-            } else if(validateOctalValue(buff) == -2) {
-                fprintf(stderr, "\n\nValueError: octal value's greater than expected.");
-                return 1;
-            }
-
-            ch = octToDec(AtoI(buff));
-
-            if(outfile_stat) fputc(ch, out);
-            else printf("%c", ch);
-
-        } else if(!strcmp(type, "-hd")){
-
-            if(validateHexValue(buff) == -1) {
-                fprintf(stderr, "\n\nValueError: detected incorrect hex value.");
-                return 1;     
-
-            } else if(validateHexValue(buff) == -2) {
-                fprintf(stderr, "\n\nValueError: hexadecimal value's greater than expected.");
-                return 1;
-            }
-
-            ch = hexToDec(buff);
-
-            if(outfile_stat) fputc(ch, out);
-            else printf("%c", ch);
-
-        } else if(!strcmp(type, "-bd")){
-
-            if(validateBinValue(buff) == -1) {
-                fprintf(stderr, "\n\nValueError: detected incorrect binary value.");
-                return 1;
-
-            } else if(validateBinValue(buff) == -2) {
-                fprintf(stderr, "\n\nValueError: binary value's greater than expected.");
-                return 1;
-            }
-
-            ch = binToDec(buff);
-
-            if(outfile_stat) fputc(ch, out);
-            else printf("%c", ch);
-
-        } else if(!strcmp(type, "-id")){
-
-            if(validateIntValue(buff) == -1) {
-                fprintf(stderr, "\n\nValueError: decimal value out of range.");
-                return 1;
-            }    
-
-            ch  = AtoI(buff);
-
-            if(outfile_stat) fputc(ch, out);
-            else printf("%c", ch);
-
-        } 
-    }
-    if(!outfile_stat)
-        putchar(end);
-
-    fclose(fp); fclose(out);
-    remove("temp");
-    remove("nil");
-
-    return 0;
-}
-
-
 void usage(char* param){
     fprintf(stderr, "\nUsage: %s <type> <input> data|file -o outfile.txt\n", param);
 }
@@ -387,8 +344,8 @@ int main(int argc, char**argv){
 
     char *opt_hd = "-hd", *opt_bd = "-bd", *opt_od = "-od", *opt_id = "-id", 
          *opt_f = "-f", *opt_o = "-o", *opt_i = "-i";
-    char *in_file, *out_file, type[5]; 
-    char* arg_in;
+    char *in_file = NULL, *out_file, type[5]; 
+    char* storage;
     int i = 0, opt_f_stat = 0, opt_o_stat = 0, opt_i_stat = 0, type_stat = 0;
 
     if(argc == 1){
@@ -437,7 +394,7 @@ int main(int argc, char**argv){
                     \n    %s -h\n\n", basename(argv[0]));
                     return -1;
                 }
-                arg_in = argv[i+1];
+                storage = argv[i+1];
                 opt_i_stat = 1;
 
                 if(opt_f_stat && opt_i_stat){
@@ -503,27 +460,30 @@ int main(int argc, char**argv){
         
     }
 
-        if(opt_o_stat == 0)
-            out_file = "nil";
+    if(in_file != NULL){
 
-        if(opt_f_stat == 0 && opt_i_stat == 0){
-            fprintf(stderr, "\nInputError: no data or file detected.\n");
-            help();
+        storage = get_file_data(in_file);
+    }
+
+    if(opt_o_stat == 0)
+        out_file = "nil";
+
+    if(opt_f_stat == 0 && opt_i_stat == 0){
+        fprintf(stderr, "\nInputError: no data or file detected.\n");
+        help();
+        return -1;
+    } else {
+        if(!strcmp(type, opt_od))
+            octal_to_string_arg(storage, opt_o_stat, out_file);
+        else if(!strcmp(type, opt_hd))
+            hexadecimal_to_string_arg(storage, opt_o_stat, out_file);
+        else if(!strcmp(type, opt_bd))
+            binary_to_string_arg(storage, opt_o_stat, out_file);
+        else if(!strcmp(type, opt_id))
+            decimal_to_string_arg(storage, opt_o_stat, out_file);
+        else    
             return -1;
-        } else if(opt_f_stat == 1 && opt_i_stat == 0){
-            to_string_infile(in_file, opt_o_stat, out_file, type);
-        } else {
-            if(!strcmp(type, opt_od))
-                octal_to_string_arg(arg_in, opt_o_stat, out_file);
-            else if(!strcmp(type, opt_hd))
-                hexadecimal_to_string_arg(arg_in, opt_o_stat, out_file);
-            else if(!strcmp(type, opt_bd))
-                binary_to_string_arg(arg_in, opt_o_stat, out_file);
-            else if(!strcmp(type, opt_id))
-                decimal_to_string_arg(arg_in, opt_o_stat, out_file);
-            else    
-                return -1;
-        }
+    }
 
     return 0;
 }

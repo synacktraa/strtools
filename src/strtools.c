@@ -196,6 +196,118 @@ int hexadecimalToStr(char *hexdump, char* file_out){
 }
 
 
+int stringToDecimal_arg(char* string, char* file_out){
+
+    int ch;
+    FILE*out;
+
+    if(file_out != NULL){
+        out = fopen(file_out, "w");
+
+        if(out == NULL){
+            fprintf(stderr, "FileError: file can't be opened.");
+            return -1;
+        }            
+    }
+
+    for(int i = 0; i < strlen(string); ++i){
+        ch = *(string+i);
+
+        if(file_out != NULL) {fprintf(out, "%d", ch); fputc(' ', out);}
+        else printf("%d ", ch);
+    }    
+    if(file_out == NULL)
+        putchar(end);
+    else
+        fclose(out);
+
+    return 0;
+}
+
+int stringToOctal_arg(char* string, char* file_out){
+
+    int ch;
+    FILE*out;
+
+    if(file_out != NULL){
+        out = fopen(file_out, "w");
+
+        if(out == NULL){
+            fprintf(stderr, "FileError: file can't be opened.");
+            return -1;
+        }            
+    }
+
+    for(int i = 0; i < strlen(string); ++i){
+        ch = decToOct(*(string+i));
+
+        if(file_out != NULL) {fprintf(out, "%d", ch); fputc(' ', out);}
+        else printf("%d ", ch);
+    }    
+    if(file_out == NULL)
+        putchar(end);
+    else
+        fclose(out);
+
+    return 0;
+}
+
+int stringToHexadecimal_arg(char* string, char* file_out){
+
+    char str[5];
+    FILE*out;
+
+    if(file_out != NULL){
+        out = fopen(file_out, "w");
+
+        if(out == NULL){
+            fprintf(stderr, "FileError: file can't be opened.");
+            return -1;
+        }            
+    }
+
+    for(int i = 0; i < strlen(string); ++i){
+        strcpy(str, decToHex(*(string+i)));
+
+        if(file_out != NULL) {fputs(str, out); fputc(' ', out);}
+        else printf("%s ", str);
+    }    
+    if(file_out == NULL)
+        putchar(end);
+    else
+        fclose(out);
+
+    return 0;
+}
+
+int stringToBinary_arg(char* string, char* file_out){
+
+    char str[10];
+    FILE*out;
+
+    if(file_out != NULL){
+        out = fopen(file_out, "w");
+
+        if(out == NULL){
+            fprintf(stderr, "FileError: file can't be opened.");
+            return -1;
+        }            
+    }
+    for(int i = 0; i < strlen(string); ++i){
+        strcpy(str, decToBin(*(string+i)));
+
+        if(file_out != NULL) {fputs(str, out); fputc(' ', out);}
+        else printf("%s ", str);
+    }    
+    if(file_out == NULL)
+        putchar(end);
+    else
+        fclose(out);
+
+    return 0;
+}
+
+
 void usage(char* param){
     fprintf(stderr, "\nUsage: %s <type> <input> data|file -o outfile.txt\n", param);
 }
@@ -222,7 +334,8 @@ int arg_validate(char* arg){
         !strcmp(arg, "-id") || 
         !strcmp(arg, "-f") ||
         !strcmp(arg, "-i") ||
-        !strcmp(arg, "-o")){
+        !strcmp(arg, "-o") ||
+        !strcmp(arg, "--string")){
             return -1;
         }
     return 0;
@@ -240,21 +353,21 @@ int main(int argc, char**argv){
     #endif
 
     char *opt_hd = "-hd", *opt_bd = "-bd", *opt_od = "-od", *opt_id = "-id", 
-         *opt_f = "-f", *opt_o = "-o", *opt_i = "-i";
+         *opt_f = "-f", *opt_o = "-o", *opt_i = "-i", *opt_tostr = "--string";
     char *out_file = NULL, type[5]; 
     char* storage;
-    int i = 0, opt_f_stat = 0, opt_i_stat = 0, type_stat = 0;
+    int i = 0, opt_f_stat = 0, opt_i_stat = 0, type_stat = 0, opt_tostr_stat = 0;
 
     if(argc == 2 && !strcmp(argv[1], "-h")){
         usage(basename(argv[0]));
         help();
         return 1;
 
-    } else if(argc > 6){
+    } else if(argc > 7){
         fprintf(stderr, "\nArgumentError: invalid number of arguments.");
         return -1;
 
-    } else if(argc <= 6){
+    } else if(argc <= 7){
 
         for(;i < argc; i++){
             if(!strcmp(argv[i], opt_f)){
@@ -338,6 +451,12 @@ int main(int argc, char**argv){
             }
         }
 
+        for(i = 0; i < argc; i++){
+            if(!strcmp(argv[i], opt_tostr)){
+                opt_tostr_stat = 1;
+            }
+        }
+
         if(type_stat > 1){
             fprintf(stderr, "\nTypeError: data can't be of more than one type.\n");
             help();
@@ -361,6 +480,23 @@ int main(int argc, char**argv){
         fprintf(stderr, "\nInputError: no data or file detected.\n");
         help();
         return -1;
+    } else if(opt_tostr_stat) {
+
+        for(int l = 0; l < strlen(storage); ++l){
+            if(charValidator(*(storage+l)) == -1){
+                fprintf(stderr, "ValueError: char value out of range.\n");
+                return 1;
+            }
+        }
+
+        if(!strcmp(type, opt_od))
+            stringToOctal_arg(storage, out_file);
+        else if(!strcmp(type, opt_hd))
+            stringToHexadecimal_arg(storage, out_file);
+        else if(!strcmp(type, opt_bd))
+            stringToBinary_arg(storage, out_file);
+        else if(!strcmp(type, opt_id))
+            stringToDecimal_arg(storage, out_file);
     } else {
         if(!strcmp(type, opt_od))
             octalToStr(storage, out_file);
@@ -373,9 +509,9 @@ int main(int argc, char**argv){
         else    
             return -1;
         
-        if(opt_f_stat)
-            freeIt(storage);
     }
+    if(opt_f_stat)
+        freeIt(storage);
 
     return 0;
 }

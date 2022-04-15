@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int power(int base, int p){ 
    int result = 1;
@@ -137,8 +138,71 @@ int binToDec(char* binary){
 }
 
 
+char* decToHex(int n){ 
+ 
+    unsigned int dec = n; 
+    int remain, i = 0; 
+    char hex[100]; 
+ 
+    while(dec){ 
+
+        remain = dec % 16; 
+        if (remain < 10) 
+            hex[i++] = 48 + remain;
+        else 
+            hex[i++] = 55 + remain;
+        dec = dec/ 16; 
+    }
+    hex[i] = '\0'; 
+    reverse(hex);
+
+    return strdup(hex);
+   
+}
+
+
+int decToOct(int n){ 
+
+    int dec = n, oct = 0, count = 0;
+
+    while(dec){ 
+        count++; 
+        dec = dec/10; 
+    }
+
+    dec = n;
+    for(int i = 0; i <= count; i++){
+
+        oct += (dec % 8) * power(10, i); 
+        dec = dec/8; 
+    }
+    return oct;
+} 
+
+
+char* decToBin(int n){ 
+    
+    unsigned int dec = n;
+    char binary[20]; 
+    int i = 0;
+
+    while(dec){ 
+
+        int remain = dec % 2; 
+        binary[i++] = remain+48; 
+        dec = dec/2; 
+    }
+    binary[i] = '\0';
+    reverse(binary);
+
+    return strdup(binary);
+    
+}
+
 void freeIt(char* alloc_mem) {
 
     free(alloc_mem);
     alloc_mem = NULL;
 }
+
+

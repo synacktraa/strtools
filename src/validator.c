@@ -51,3 +51,11 @@ int validateBinValue(char*bin_value) {
 
     return 0;
 }
+
+
+int charValidator(char ch) {
+
+    if(ch < 0 || ch > 126)
+        return -1;
+    return 0;
+}

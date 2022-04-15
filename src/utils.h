@@ -11,6 +11,9 @@ int Strlen(char *str);
 int AtoI(const char* str);
 void reverse(char*str);
 void ItoA(int dec, char* dest);
+char* decToHex(int n);
+int decToOct(int n);
+char* decToBin(int n);
 void freeIt(char* alloc_mem);
 
 #endif

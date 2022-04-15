@@ -1,18 +1,19 @@
 BIN=gcc
 CFLAGS=-g -Wall
+SRCDIR=src
 
 all: strtools
 
-strtools.o: strtools.c
+strtools.o: $(SRCDIR)/strtools.c
 	$(BIN) $(CFLAGS) -c $^
 
-utils.o: utils.c
+utils.o: $(SRCDIR)/utils.c
 	$(BIN) $(CFLAGS) -c $^
 
-file_handler.o: file_handler.c
+file_handler.o: $(SRCDIR)/file_handler.c
 	$(BIN) $(CFLAGS) -c $^
 
-validator.o: validator.c
+validator.o: $(SRCDIR)/validator.c
 	$(BIN) $(CFLAGS) -c $^
 
 strtools: strtools.o utils.o file_handler.o validator.o

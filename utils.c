@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 
 int power(int base, int p){ 
    int result = 1;
@@ -132,4 +134,11 @@ int binToDec(char* binary){
         dec += (*(binary+k)-48)*power(2,j); 
 
     return dec;
+}
+
+
+void freeIt(char* alloc_mem) {
+
+    free(alloc_mem);
+    alloc_mem = NULL;
 }

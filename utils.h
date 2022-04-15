@@ -1,5 +1,5 @@
-#ifndef CONVERT_H /* Include guard */
-#define CONVERT_H
+#ifndef UTILS_H /* Include guard */
+#define UTILS_H
 
 //Function declarations
 int octToDec(int oct);
@@ -11,5 +11,6 @@ int Strlen(char *str);
 int AtoI(const char* str);
 void reverse(char*str);
 void ItoA(int dec, char* dest);
+void freeIt(char* alloc_mem);
 
 #endif

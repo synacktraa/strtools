@@ -1,21 +1,27 @@
 BIN=gcc
 CFLAGS=-g -Wall
 
-all: toString
+all: strtools
 
-toString.o: toString.c
+strtools.o: strtools.c
 	$(BIN) $(CFLAGS) -c $^
 
-toString_utils.o: toString_utils.c
+utils.o: utils.c
 	$(BIN) $(CFLAGS) -c $^
 
-toString: toString.o toString_utils.o
+file_handler.o: file_handler.c
+	$(BIN) $(CFLAGS) -c $^
+
+validator.o: validator.c
+	$(BIN) $(CFLAGS) -c $^
+
+strtools: strtools.o utils.o file_handler.o validator.o
 	$(BIN) $(CFLAGS) $^ -o $@
 
 clean:
 
 ifeq ($(OS),Windows_NT)
-	del *.o, toString.exe
+	del *.o, strtools.exe
 else
-	rm *.o toString
+	rm *.o strtools
 endif

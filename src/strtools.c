@@ -8,6 +8,7 @@
 
 #define BUFFER 20
 
+char *basename(char const *path);
 int octalToStr(char *, char*);
 int decimalToStr(char *, char*);
 int binaryToStr(char *, char*);

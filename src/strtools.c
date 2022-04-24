@@ -196,7 +196,7 @@ int hexadecimalToStr(char *hexdump, char* file_out){
 }
 
 
-int stringToDecimal_arg(char* string, char* file_out){
+int stringToDecimal(char* string, char* file_out){
 
     int ch;
     FILE*out;
@@ -224,7 +224,7 @@ int stringToDecimal_arg(char* string, char* file_out){
     return 0;
 }
 
-int stringToOctal_arg(char* string, char* file_out){
+int stringToOctal(char* string, char* file_out){
 
     int ch;
     FILE*out;
@@ -252,7 +252,7 @@ int stringToOctal_arg(char* string, char* file_out){
     return 0;
 }
 
-int stringToHexadecimal_arg(char* string, char* file_out){
+int stringToHexadecimal(char* string, char* file_out){
 
     char str[5];
     FILE*out;
@@ -280,7 +280,7 @@ int stringToHexadecimal_arg(char* string, char* file_out){
     return 0;
 }
 
-int stringToBinary_arg(char* string, char* file_out){
+int stringToBinary(char* string, char* file_out){
 
     char str[10];
     FILE*out;
@@ -309,33 +309,35 @@ int stringToBinary_arg(char* string, char* file_out){
 
 
 void usage(char* param){
-    fprintf(stderr, "\nUsage: %s <type> <input> data|file -o outfile.txt\n", param);
+    fprintf(stderr, "\nUsage: %s <type|conversion> <input> [ data | file ] -o outfile.txt\n", param);
 }
 
 void help(){
-    fprintf(stderr, "\n|CLI options|:-\
-    \n   type:\n      -od = processes data as octal.\
-    \n      -bd = processes data as binary.\
-    \n      -id = processes data as decimal.\
-    \n      -hd = processes data as hexadecimal.\
-    \n\n   input:\n      -i = takes next argument as data string.\
-    \n      -f = takes next argument as filename.\
-    \n\n   optional:\n      -o = takes next argument as filename.\
-    \n\t   (if filename is null, it's set to toString_out as filename.)\
+    fprintf(stdout, "\n|CLI options|:-\
+    \n   type/conversion:\
+    \n      -O  converts octal dump to string.\
+    \n      -B  converts binary dump to string.\
+    \n      -D  converts decimal dump to string.\
+    \n      -X  converts hexadecimal dump to string.\
+    \n    [if -s flag is specified, it converts string to base<int>.]\
+    \n\n   input:\n      -i  takes next argument as data string.\
+    \n      -f  takes next argument as filename.\
+    \n\n   optional:\n      -o  takes next argument as filename.\
+    \n\t   (if filename is null, it's set to strtools_out as filename.)\
     \n\t   [if '-o' is not used, result is printed to STDOUT.]\n\n");
 }
 
 
 int arg_validate(char* arg){
     if(arg == NULL || 
-        !strcmp(arg, "-hd") ||
-        !strcmp(arg, "-bd") || 
-        !strcmp(arg, "-od") || 
-        !strcmp(arg, "-id") || 
+        !strcmp(arg, "-X") ||
+        !strcmp(arg, "-B") || 
+        !strcmp(arg, "-O") || 
+        !strcmp(arg, "-D") || 
         !strcmp(arg, "-f") ||
         !strcmp(arg, "-i") ||
         !strcmp(arg, "-o") ||
-        !strcmp(arg, "--string")){
+        !strcmp(arg, "-s")){
             return -1;
         }
     return 0;
@@ -352,8 +354,8 @@ int main(int argc, char**argv){
         slash = '/';
     #endif
 
-    char *opt_hd = "-hd", *opt_bd = "-bd", *opt_od = "-od", *opt_id = "-id", 
-         *opt_f = "-f", *opt_o = "-o", *opt_i = "-i", *opt_tostr = "--string";
+    char *opt_hd = "-X", *opt_bd = "-B", *opt_od = "-O", *opt_id = "-D", 
+         *opt_f = "-f", *opt_o = "-o", *opt_i = "-i", *opt_tostr = "-s";
     char *out_file = NULL, type[5]; 
     char* storage;
     int i = 0, opt_f_stat = 0, opt_i_stat = 0, type_stat = 0, opt_tostr_stat = 0;
@@ -490,13 +492,13 @@ int main(int argc, char**argv){
         }
 
         if(!strcmp(type, opt_od))
-            stringToOctal_arg(storage, out_file);
+            stringToOctal(storage, out_file);
         else if(!strcmp(type, opt_hd))
-            stringToHexadecimal_arg(storage, out_file);
+            stringToHexadecimal(storage, out_file);
         else if(!strcmp(type, opt_bd))
-            stringToBinary_arg(storage, out_file);
+            stringToBinary(storage, out_file);
         else if(!strcmp(type, opt_id))
-            stringToDecimal_arg(storage, out_file);
+            stringToDecimal(storage, out_file);
     } else {
         if(!strcmp(type, opt_od))
             octalToStr(storage, out_file);

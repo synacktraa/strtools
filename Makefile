@@ -1,5 +1,5 @@
 BIN=gcc
-CFLAGS=-g -Wall
+CFLAGS=-g -Wall -Werror -Wextra
 SRCDIR=src
 
 all: strtools

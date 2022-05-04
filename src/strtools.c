@@ -6,16 +6,7 @@
 #include "file_handler.h"
 #include "validator.h"
 
-#define BUFFER 20
-
-char *basename(char const *path);
-int octalToStr(char *, char*);
-int decimalToStr(char *, char*);
-int binaryToStr(char *, char*);
-int hexadecimalToStr(char *, char*);
-
 char slash = '/', end = 0;
-
 
 char *basename(char const *path){
 
@@ -27,7 +18,7 @@ char *basename(char const *path){
 
 }
 
-int octalToStr(char *octdump, char* file_out){
+int octal_to_string(char *octdump, char* file_out){
 
     char *token;
     FILE*out;
@@ -41,17 +32,17 @@ int octalToStr(char *octdump, char* file_out){
         }            
     }
     
-    if(validateOctalValue(octdump) == -1) {
-        fprintf(stderr, "ValueError: detected incorrect octal value.");
-        putchar(end);
-        return 1;
 
-    }
     token = strtok(octdump, " ");
     
     while( token != NULL ) {
         
+        if(validateOctalValue(token) == -1) {
+            fprintf(stderr, "ValueError: detected incorrect octal value.");
+            putchar(end);
+            return 1;
 
+        }
         char ch = octToDec(AtoI(token));
 
         if(file_out != NULL) fputc(ch, out);
@@ -68,7 +59,7 @@ int octalToStr(char *octdump, char* file_out){
     }
 
 
-int decimalToStr(char *intdump, char* file_out){
+int decimal_to_string(char *intdump, char* file_out){
 
     char *token;
     FILE*out;
@@ -109,7 +100,7 @@ int decimalToStr(char *intdump, char* file_out){
 }
 
 
-int binaryToStr(char *bindump, char* file_out){
+int binary_to_string(char *bindump, char* file_out){
 
     char *token;
     FILE*out;
@@ -123,21 +114,21 @@ int binaryToStr(char *bindump, char* file_out){
         }            
     }
 
-    if(validateBinValue(bindump) == -1) {
-        fprintf(stderr, "ValueError: detected incorrect binary value.");
-        putchar(end);
-        return 1;
 
-    } else if(validateBinValue(bindump) == -2) {
-        fprintf(stderr, "ValueError: binary value's greater than expected.");
-        putchar(end);
-        return 1;
-    }
     
     token = strtok(bindump, " ");
     
     while( token != NULL ) {
+        if(validateBinValue(token) == -1) {
+            fprintf(stderr, "ValueError: detected incorrect binary value.");
+            putchar(end);
+            return 1;
 
+        } else if(validateBinValue(token) == -2) {
+            fprintf(stderr, "ValueError: binary value's greater than expected.");
+            putchar(end);
+            return 1;
+        }
         char ch = binToDec(token);
 
         if(file_out != NULL) fputc(ch, out);
@@ -155,7 +146,7 @@ int binaryToStr(char *bindump, char* file_out){
 }
 
 
-int hexadecimalToStr(char *hexdump, char* file_out){
+int hexadecimal_to_string(char *hexdump, char* file_out){
 
     char *token;
     FILE*out;
@@ -210,7 +201,7 @@ int stringToDecimal(char* string, char* file_out){
         }            
     }
 
-    for(int i = 0; i < strlen(string); ++i){
+    for(size_t i = 0; i < strlen(string); ++i){
         ch = *(string+i);
 
         if(file_out != NULL) {fprintf(out, "%d", ch); fputc(' ', out);}
@@ -238,7 +229,7 @@ int stringToOctal(char* string, char* file_out){
         }            
     }
 
-    for(int i = 0; i < strlen(string); ++i){
+    for(size_t i = 0; i < strlen(string); ++i){
         ch = decToOct(*(string+i));
 
         if(file_out != NULL) {fprintf(out, "%d", ch); fputc(' ', out);}
@@ -266,7 +257,7 @@ int stringToHexadecimal(char* string, char* file_out){
         }            
     }
 
-    for(int i = 0; i < strlen(string); ++i){
+    for(size_t i = 0; i < strlen(string); ++i){
         strcpy(str, decToHex(*(string+i)));
 
         if(file_out != NULL) {fputs(str, out); fputc(' ', out);}
@@ -293,7 +284,7 @@ int stringToBinary(char* string, char* file_out){
             return -1;
         }            
     }
-    for(int i = 0; i < strlen(string); ++i){
+    for(size_t i = 0; i < strlen(string); ++i){
         strcpy(str, decToBin(*(string+i)));
 
         if(file_out != NULL) {fputs(str, out); fputc(' ', out);}
@@ -343,7 +334,6 @@ int arg_validate(char* arg){
     return 0;
 }
 
-
 int main(int argc, char**argv){
 
     #ifdef _WIN32
@@ -357,13 +347,14 @@ int main(int argc, char**argv){
     char *opt_hd = "-X", *opt_bd = "-B", *opt_od = "-O", *opt_id = "-D", 
          *opt_f = "-f", *opt_o = "-o", *opt_i = "-i", *opt_tostr = "-s";
     char *out_file = NULL, type[5]; 
-    char* storage;
+    char *storage, *exe = basename(argv[0]);
     int i = 0, opt_f_stat = 0, opt_i_stat = 0, type_stat = 0, opt_tostr_stat = 0;
 
     if(argc == 2 && !strcmp(argv[1], "-h")){
-        usage(basename(argv[0]));
+        usage(exe);
         help();
-        return 1;
+        freeIt(exe);
+        return -1;
 
     } else if(argc > 7){
         fprintf(stderr, "\nArgumentError: invalid number of arguments.");
@@ -377,10 +368,12 @@ int main(int argc, char**argv){
                 opt_f_stat = 1;
                 if(arg_validate(argv[i+1]) == -1){
                     fprintf(stderr, "\nInputError: file not detected.\n");
-                    usage(basename(argv[0]));
+                    usage(exe);
                     fprintf(stderr, "\nFor more, check help section:\
-                    \n    %s -h\n\n", basename(argv[0]));
+                    \n    %s -h\n\n", exe);
+                    freeIt(exe);
                     return -1;
+
                 }
                 storage = get_file_data(argv[i+1]);
                 break;
@@ -396,17 +389,21 @@ int main(int argc, char**argv){
                 opt_i_stat = 1;
                 if(arg_validate(argv[i+1]) == -1){
                     fprintf(stderr, "\nInputError: no input detected.\n");
-                    usage(basename(argv[0]));
+                    usage(exe);
                     fprintf(stderr, "\nFor more, check help section:\
-                    \n    %s -h\n\n", basename(argv[0]));
+                    \n    %s -h\n\n", exe);
+                    freeIt(exe);
                     return -1;
+
                 }
                 storage = argv[i+1];
 
                 if(opt_f_stat && opt_i_stat){
-                    usage(basename(argv[0]));
+                    usage(exe);
                     help();
+                    freeIt(exe);
                     return -1;
+
                 }
         
             } else{
@@ -470,9 +467,10 @@ int main(int argc, char**argv){
         }
         
     } else{
-        usage(basename(argv[0]));
+        usage(exe);
         fprintf(stderr, "\nFor more, check help section:\
-        \n    %s -h\n\n", basename(argv[0]));
+        \n    %s -h\n\n", exe);
+        freeIt(exe);
         return -1;
 
     }
@@ -484,13 +482,6 @@ int main(int argc, char**argv){
         return -1;
     } else if(opt_tostr_stat) {
 
-        for(int l = 0; l < strlen(storage); ++l){
-            if(charValidator(*(storage+l)) == -1){
-                fprintf(stderr, "ValueError: char value out of range.\n");
-                return 1;
-            }
-        }
-
         if(!strcmp(type, opt_od))
             stringToOctal(storage, out_file);
         else if(!strcmp(type, opt_hd))
@@ -501,19 +492,19 @@ int main(int argc, char**argv){
             stringToDecimal(storage, out_file);
     } else {
         if(!strcmp(type, opt_od))
-            octalToStr(storage, out_file);
+            octal_to_string(storage, out_file);
         else if(!strcmp(type, opt_hd))
-            hexadecimalToStr(storage, out_file);
+            hexadecimal_to_string(storage, out_file);
         else if(!strcmp(type, opt_bd))
-            binaryToStr(storage, out_file);
+            binary_to_string(storage, out_file);
         else if(!strcmp(type, opt_id))
-            decimalToStr(storage, out_file);
+            decimal_to_string(storage, out_file);
         else    
             return -1;
         
     }
     if(opt_f_stat)
         freeIt(storage);
-
+    
     return 0;
 }

@@ -1,20 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include<ctype.h>
 #include "utils.h"
-
-int get_filesize(const char *file){
-
-    FILE* fp = fopen(file, "r");
-    if (fp == NULL) {
-        return -1;
-    }
-    fseek(fp, 0L, SEEK_END);
-    int res = ftell(fp);
-    fclose(fp);
-  
-    return res;
-}
 
 
 int checkIfFileExists(const char * file) {
@@ -44,19 +32,36 @@ char* get_file_data(const char*file) {
         exit(1);
     }
 
-    int buffer_len = get_filesize(file)+2;
+    int buffsize = 1024;
+    FILE * fptr = fopen(file, "rb");
+    char* buffer = (char*)malloc(buffsize);
     
-    FILE * file_in = fopen(file, "r");
-    char* data_storage = (char*)malloc(sizeof(char) * buffer_len);
-    char* buffer = (char*)malloc(sizeof(char) * buffer_len);
+    if(buffer == NULL) exit(EXIT_FAILURE);
+
+    int ch, cursor = 0;
+    do { 
+        do { 
+            ch = fgetc(fptr); //storing char in ch
+            
+            // if ch is not the end of file, buffer is appended with ch char value
+            if(ch != EOF){
+                if(isprint(ch) || ch == '\t')
+                    buffer[cursor++] = (char)ch;
+            } 
+
+            /* if cursor crosses current buffer size
+                it's doubled in size and new size gets reallocated */
+            if(cursor >= buffsize - 1) { 
+                buffsize <<=1;
+                buffer = (char*)realloc(buffer, buffsize);
+            }
+        } while(ch != EOF && ch != '\n'); // will continue until ch is not EOF and newline character
+        
+        buffer[cursor++] ='\n';
+    } while(ch != EOF); // while ch is not end of the file
     
-    if(data_storage == NULL || buffer == NULL)
-        exit(1);
+    buffer[--cursor] = '\0';
+    fclose(fptr); //always close the file pointer BAKA ^_^         
 
-    memset(data_storage, 0, Strlen(data_storage));
-    while (fgets(buffer, buffer_len, file_in))
-        strcat(data_storage, buffer);
-
-    freeIt(buffer);
-    return data_storage;
+    return buffer;
 }

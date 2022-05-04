@@ -1,5 +1,6 @@
-#ifndef UTILS_H /* Include guard */
-#define UTILS_H
+
+#pragma once
+
 
 //Function declarations
 int octToDec(int oct);
@@ -16,4 +17,4 @@ int decToOct(int n);
 char* decToBin(int n);
 void freeIt(char* alloc_mem);
 
-#endif
+

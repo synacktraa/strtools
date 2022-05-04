@@ -203,6 +203,7 @@ void freeIt(char* alloc_mem) {
 
     free(alloc_mem);
     alloc_mem = NULL;
+    // exit(0);
 }
 
 

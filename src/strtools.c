@@ -189,7 +189,6 @@ int hexadecimal_to_string(char *hexdump, char* file_out){
 
 int stringToDecimal(char* string, char* file_out){
 
-    int ch;
     FILE*out;
 
     if(file_out != NULL){
@@ -202,7 +201,7 @@ int stringToDecimal(char* string, char* file_out){
     }
 
     for(size_t i = 0; i < strlen(string); ++i){
-        ch = *(string+i);
+        int ch = *(string+i);
 
         if(file_out != NULL) {fprintf(out, "%d", ch); fputc(' ', out);}
         else printf("%d ", ch);
@@ -356,9 +355,6 @@ int main(int argc, char**argv){
         freeIt(exe);
         return -1;
 
-    } else if(argc > 7){
-        fprintf(stderr, "\nArgumentError: invalid number of arguments.");
-        return -1;
 
     } else if(argc <= 7){
 

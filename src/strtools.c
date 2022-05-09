@@ -351,7 +351,7 @@ int main(int argc, char**argv){
     if(argc == 2 && !strcmp(argv[1], "-h")){
         usage(exe);
         help();
-        freeIt(exe);
+        freeIt(&exe);
         return -1;
 
 
@@ -366,7 +366,7 @@ int main(int argc, char**argv){
                     usage(exe);
                     fprintf(stderr, "\nFor more, check help section:\
                     \n    %s -h\n\n", exe);
-                    freeIt(exe);
+                    freeIt(&exe);
                     return -1;
 
                 }
@@ -387,7 +387,7 @@ int main(int argc, char**argv){
                     usage(exe);
                     fprintf(stderr, "\nFor more, check help section:\
                     \n    %s -h\n\n", exe);
-                    freeIt(exe);
+                    freeIt(&exe);
                     return -1;
 
                 }
@@ -396,7 +396,7 @@ int main(int argc, char**argv){
                 if(opt_f_stat && opt_i_stat){
                     usage(exe);
                     help();
-                    freeIt(exe);
+                    freeIt(&exe);
                     return -1;
 
                 }
@@ -465,7 +465,7 @@ int main(int argc, char**argv){
         usage(exe);
         fprintf(stderr, "\nFor more, check help section:\
         \n    %s -h\n\n", exe);
-        freeIt(exe);
+        freeIt(&exe);
         return -1;
 
     }
@@ -499,7 +499,7 @@ int main(int argc, char**argv){
         
     }
     if(opt_f_stat)
-        freeIt(storage);
+        freeIt(&storage);
     
     return 0;
 }

@@ -216,7 +216,6 @@ int stringToDecimal(char* string, char* file_out){
 
 int stringToOctal(char* string, char* file_out){
 
-    int ch;
     FILE*out;
 
     if(file_out != NULL){
@@ -229,7 +228,7 @@ int stringToOctal(char* string, char* file_out){
     }
 
     for(size_t i = 0; i < strlen(string); ++i){
-        ch = decToOct(*(string+i));
+        int ch = decToOct(*(string+i));
 
         if(file_out != NULL) {fprintf(out, "%d", ch); fputc(' ', out);}
         else printf("%d ", ch);

@@ -141,12 +141,12 @@ int binToDec(char* binary){
 char* decToHex(int n){ 
  
     unsigned int dec = n; 
-    int remain, i = 0; 
+    int i = 0; 
     char hex[100]; 
  
     while(dec){ 
 
-        remain = dec % 16; 
+        int remain = dec % 16; 
         if (remain < 10) 
             hex[i++] = 48 + remain;
         else 
@@ -203,7 +203,6 @@ void freeIt(char** alloc_mem) {
 
     free(*alloc_mem);
     *alloc_mem = NULL;
-    // exit(0);
 }
 
 

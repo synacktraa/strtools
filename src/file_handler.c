@@ -48,11 +48,7 @@ char* get_file_data(const char*file, int status) {
         if(cursor >= buffsize - 1) { 
             buffsize <<=1;
             buffer = (char*)realloc(buffer, buffsize);
-<<<<<<< HEAD
         	if(buffer == NULL) exit(EXIT_FAILURE);
-=======
-			if(buffer == NULL) exit(EXIT_FAILURE);
->>>>>>> 7d2e751225a706efaecb3c22c6f6440cd4cdc29b
         }
         
     } // while ch is not end of the file

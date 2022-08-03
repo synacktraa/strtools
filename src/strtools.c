@@ -30,7 +30,7 @@ int octal_to_string(char *octdump, char* file_out){
             fprintf(stderr, "FileError: file can't be opened.");
             return -1;
         }            
-    }
+    } else out = stdout;
     
 
     token = strtok(octdump, " ");
@@ -43,10 +43,9 @@ int octal_to_string(char *octdump, char* file_out){
             return 1;
 
         }
-        char ch = octToDec(AtoI(token));
 
-        if(file_out != NULL) fputc(ch, out);
-        else putchar(ch);
+	char ch = octToDec(AtoI(token));
+        fputc(ch, out);
 
         token = strtok(NULL, " ");
     }
@@ -71,7 +70,7 @@ int decimal_to_string(char *intdump, char* file_out){
             fprintf(stderr, "FileError: file can't be opened.");
             return -1;
         }            
-    }       
+    } else out = stdout;       
     
     if(validateIntValue(intdump) == -1) {
         fprintf(stderr, "ValueError: incorrect value detected.");
@@ -84,9 +83,7 @@ int decimal_to_string(char *intdump, char* file_out){
     while( token != NULL ) {  
 
         char ch  = AtoI(token);
-
-        if(file_out != NULL) fputc(ch, out);
-        else putchar(ch);
+        fputc(ch, out);
 
         token = strtok(NULL, " ");
     }
@@ -112,10 +109,9 @@ int binary_to_string(char *bindump, char* file_out){
             fprintf(stderr, "FileError: file can't be opened.");
             return -1;
         }            
-    }
+    } else out = stdout;
 
 
-    
     token = strtok(bindump, " ");
     
     while( token != NULL ) {
@@ -130,9 +126,7 @@ int binary_to_string(char *bindump, char* file_out){
             return 1;
         }
         char ch = binToDec(token);
-
-        if(file_out != NULL) fputc(ch, out);
-        else putchar(ch);
+        fputc(ch, out);
 
         token = strtok(NULL, " ");
     }
@@ -158,7 +152,7 @@ int hexadecimal_to_string(char *hexdump, char* file_out){
             fprintf(stderr, "FileError: file can't be opened.");
             return -1;
         }            
-    }  
+    } else out = stdout;
 
     if(validateHexValue(hexdump) == -1) {
         fprintf(stderr, "ValueError: detected incorrect hex value.");
@@ -171,9 +165,7 @@ int hexadecimal_to_string(char *hexdump, char* file_out){
     while( token != NULL ) {
 
         char ch = hexToDec(token);
-
-        if(file_out != NULL) fputc(ch, out);
-        else putchar(ch);
+        fputc(ch, out);
 
         token = strtok(NULL, " ");
     }
@@ -189,7 +181,6 @@ int hexadecimal_to_string(char *hexdump, char* file_out){
 
 int stringToDecimal(char* string, char* file_out){
 
-    int ch;
     FILE*out;
 
     if(file_out != NULL){
@@ -199,13 +190,12 @@ int stringToDecimal(char* string, char* file_out){
             fprintf(stderr, "FileError: file can't be opened.");
             return -1;
         }            
-    }
+    } else out = stdout;
 
     for(size_t i = 0; i < strlen(string); ++i){
-        ch = *(string+i);
+        int ch = *(string+i);
 
-        if(file_out != NULL) {fprintf(out, "%d", ch); fputc(' ', out);}
-        else printf("%d ", ch);
+        fprintf(out, "%d ", ch);
     }    
     if(file_out == NULL)
         putchar(end);
@@ -217,7 +207,6 @@ int stringToDecimal(char* string, char* file_out){
 
 int stringToOctal(char* string, char* file_out){
 
-    int ch;
     FILE*out;
 
     if(file_out != NULL){
@@ -227,13 +216,12 @@ int stringToOctal(char* string, char* file_out){
             fprintf(stderr, "FileError: file can't be opened.");
             return -1;
         }            
-    }
+    } else out = stdout;
 
     for(size_t i = 0; i < strlen(string); ++i){
-        ch = decToOct(*(string+i));
+        int ch = decToOct(*(string+i));
 
-        if(file_out != NULL) {fprintf(out, "%d", ch); fputc(' ', out);}
-        else printf("%d ", ch);
+        fprintf(out, "%d ", ch);
     }    
     if(file_out == NULL)
         putchar(end);
@@ -255,13 +243,12 @@ int stringToHexadecimal(char* string, char* file_out){
             fprintf(stderr, "FileError: file can't be opened.");
             return -1;
         }            
-    }
+    } else out = stdout;
 
     for(size_t i = 0; i < strlen(string); ++i){
         strcpy(str, decToHex(*(string+i)));
 
-        if(file_out != NULL) {fputs(str, out); fputc(' ', out);}
-        else printf("%s ", str);
+        fprintf(out, "%s ", str);
     }    
     if(file_out == NULL)
         putchar(end);
@@ -283,12 +270,12 @@ int stringToBinary(char* string, char* file_out){
             fprintf(stderr, "FileError: file can't be opened.");
             return -1;
         }            
-    }
+    } else out = stdout;
+
     for(size_t i = 0; i < strlen(string); ++i){
         strcpy(str, decToBin(*(string+i)));
 
-        if(file_out != NULL) {fputs(str, out); fputc(' ', out);}
-        else printf("%s ", str);
+        fprintf(out, "%s ", str);
     }    
     if(file_out == NULL)
         putchar(end);
@@ -353,16 +340,19 @@ int main(int argc, char**argv){
     if(argc == 2 && !strcmp(argv[1], "-h")){
         usage(exe);
         help();
-        freeIt(exe);
+        freeIt(&exe);
         return -1;
 
-    } else if(argc > 7){
-        fprintf(stderr, "\nArgumentError: invalid number of arguments.");
-        return -1;
 
-    } else if(argc <= 7){
+    } else if(argc >= 4 && argc <= 7){
 
-        for(;i < argc; i++){
+        for(; i < argc; i++){
+            if(!strcmp(argv[i], opt_tostr)){
+                opt_tostr_stat = 1;
+            }
+        }
+        
+	for(i = 0;i < argc; i++){
             if(!strcmp(argv[i], opt_f)){
 
                 opt_f_stat = 1;
@@ -371,11 +361,11 @@ int main(int argc, char**argv){
                     usage(exe);
                     fprintf(stderr, "\nFor more, check help section:\
                     \n    %s -h\n\n", exe);
-                    freeIt(exe);
+                    freeIt(&exe);
                     return -1;
 
                 }
-                storage = get_file_data(argv[i+1]);
+                storage = get_file_data(argv[i+1], opt_tostr_stat);
                 break;
             } else{
                 continue;
@@ -392,7 +382,7 @@ int main(int argc, char**argv){
                     usage(exe);
                     fprintf(stderr, "\nFor more, check help section:\
                     \n    %s -h\n\n", exe);
-                    freeIt(exe);
+                    freeIt(&exe);
                     return -1;
 
                 }
@@ -401,7 +391,7 @@ int main(int argc, char**argv){
                 if(opt_f_stat && opt_i_stat){
                     usage(exe);
                     help();
-                    freeIt(exe);
+                    freeIt(&exe);
                     return -1;
 
                 }
@@ -450,11 +440,6 @@ int main(int argc, char**argv){
             }
         }
 
-        for(i = 0; i < argc; i++){
-            if(!strcmp(argv[i], opt_tostr)){
-                opt_tostr_stat = 1;
-            }
-        }
 
         if(type_stat > 1){
             fprintf(stderr, "\nTypeError: data can't be of more than one type.\n");
@@ -470,7 +455,7 @@ int main(int argc, char**argv){
         usage(exe);
         fprintf(stderr, "\nFor more, check help section:\
         \n    %s -h\n\n", exe);
-        freeIt(exe);
+        freeIt(&exe);
         return -1;
 
     }
@@ -504,7 +489,7 @@ int main(int argc, char**argv){
         
     }
     if(opt_f_stat)
-        freeIt(storage);
+        freeIt(&storage);
     
     return 0;
 }

@@ -15,6 +15,6 @@ void ItoA(int dec, char* dest);
 char* decToHex(int n);
 int decToOct(int n);
 char* decToBin(int n);
-void freeIt(char* alloc_mem);
+void freeIt(char** alloc_mem);
 
 

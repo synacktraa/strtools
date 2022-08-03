@@ -199,10 +199,10 @@ char* decToBin(int n){
     
 }
 
-void freeIt(char* alloc_mem) {
+void freeIt(char** alloc_mem) {
 
-    free(alloc_mem);
-    alloc_mem = NULL;
+    free(*alloc_mem);
+    *alloc_mem = NULL;
     // exit(0);
 }
 
